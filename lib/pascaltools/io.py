@@ -9,7 +9,7 @@ from imports.basic_modules import *
 from imports.ResearchTools import *
 
 
-def get_pascal_indexlist(root, year, type, split):
+def get_pascal_indexlist(root, year, type, split, shuffle=False):
     pascal_list_file = osp.join(root, 'VOC' + year, 'ImageSets', type,
                                 'list', split + '.txt')
     pascal_tmp_list = [line.rstrip('\n') for line in open(pascal_list_file)]
@@ -17,7 +17,13 @@ def get_pascal_indexlist(root, year, type, split):
         indexlist = pascal_tmp_list
     else:
         indexlist = [line.split()[0].split('/')[2].split('.')[0] for line in pascal_tmp_list]
-    return np.array(indexlist)
+    indexlist = np.array(indexlist)
+
+    if shuffle:
+        random.seed(132)
+        random.shuffle(indexlist)
+
+    return indexlist
 
 
 def load_pascal_annotation(index, root, year):

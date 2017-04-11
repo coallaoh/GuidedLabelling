@@ -4,7 +4,10 @@ import sys
 
 sys.path.insert(0, 'lib')
 
+from imports.basic_modules import *
 from imports.import_caffe import *
+from imports.ResearchTools import *
+from imports.libmodules import *
 
 
 def set_preprocessor(net, mean_image=None):
@@ -50,3 +53,27 @@ def deprocess_net_image(image, subtract_mean=True):
     image = np.require(image, dtype=np.uint8)
 
     return image
+
+
+def preprocess_convnet_image(im, transformer, input_size, phase):
+    if phase == 'train':
+        im = random_crop(im)
+    elif phase == 'test':
+        pass
+    else:
+        raise NotImplementedError
+
+    imshape_postcrop = im.shape[:2]
+    im = scipy.misc.imresize(im, input_size / float(max(imshape_postcrop)))
+
+    imshape = im.shape[:2]
+    margin = [(input_size - imshape[0]) // 2, (input_size - imshape[1]) // 2]
+    im = cv2.copyMakeBorder(im, margin[0], input_size - imshape[0] - margin[0],
+                            margin[1], input_size - imshape[1] - margin[1],
+                            cv2.BORDER_REFLECT_101)
+    assert (im.shape[0] == im.shape[1] == input_size)
+    flip = np.random.choice(2) * 2 - 1
+    im = im[:, ::flip, :]
+
+    im = transformer.preprocess('data', im),
+    return im

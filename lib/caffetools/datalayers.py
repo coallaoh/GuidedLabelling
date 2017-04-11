@@ -150,18 +150,7 @@ class BatchLoader_PASCAL(object):
         im = load_image_PIL(image_file_name)
 
         # Process
-        im = random_crop(im)
-        imshape_postcrop = im.shape[:2]
-        im = scipy.misc.imresize(im, self.conf['input_size'] / float(max(imshape_postcrop)))
-
-        imshape = im.shape[:2]
-        margin = [(self.conf['input_size'] - imshape[0]) // 2, (self.conf['input_size'] - imshape[1]) // 2]
-        im = cv2.copyMakeBorder(im, margin[0], self.conf['input_size'] - imshape[0] - margin[0],
-                                margin[1], self.conf['input_size'] - imshape[1] - margin[1],
-                                cv2.BORDER_REFLECT_101)
-        assert (im.shape[0] == im.shape[1] == self.conf['input_size'])
-        flip = np.random.choice(2) * 2 - 1
-        im = im[:, ::flip, :]
+        im = preprocess_convnet_image(im, self.transformer, self.conf['input_size'], 'train')
 
         # <<LABEL>>
         multilabel = np.zeros(20).astype(np.float32)
@@ -171,7 +160,7 @@ class BatchLoader_PASCAL(object):
 
         self._cur += 1
 
-        return self.transformer.preprocess('data', im), multilabel
+        return im, multilabel
 
     def get_pascal_gt(self, index):
         anns = load_pascal_annotation(index, self.conf['pascalroot'], self.pascal_year)

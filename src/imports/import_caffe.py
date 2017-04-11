@@ -13,7 +13,7 @@ import tools  # this contains some tools that we need
 sys.path.insert(0, 'lib')
 from caffetools.disp import disp_net
 from caffetools.io import save_to_caffemodel
-from caffetools.preprocessor import set_preprocessor_without_net
+from caffetools.preprocessor import set_preprocessor_without_net, preprocess_convnet_image
 from caffetools.debug import debug_get_diff, debug_get_data
 
 from caffe import layers as L
