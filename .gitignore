@@ -1,0 +1,18 @@
+syntax: glob
+
+cache/*
+models/*
+data/*
+.idea/*
+*.orig
+*.pyc
+*.so
+*.bak
+*.mexa64
+*~
+*.mat
+*.pack
+*.OB # obsolete
+*.pkl
+*.json
+*.swp
