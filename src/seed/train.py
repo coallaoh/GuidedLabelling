@@ -44,7 +44,7 @@ def parse_input(argv=sys.argv):
     parser = argparse.ArgumentParser(description="Trains a seed network")
     parser.add_argument('--init', default='VGG_ILSVRC_16_layers', type=str,
                         help='Initialisation for the network')
-    parser.add_argument('--net', default='lgap_multitask', type=str,
+    parser.add_argument('--net', default='GAP-HighRes', type=str,
                         help='Network')
     parser.add_argument('--dataset', default='voc12train_aug', type=str,
                         help='Training set')

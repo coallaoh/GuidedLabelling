@@ -21,13 +21,14 @@ EXP_PHASE = 'seed-eval'
 conf = dict(
     overridecache=False,
     save=True,
+    plot=False,
     parallel=40,
     pascalroot="/BS/joon_projects/work/",
 )
 
 control = dict(
     init='VGG_ILSVRC_16_layers',
-    net='GAP-DeepLab',
+    net='GAP-LowRes',
     dataset='voc12train_aug',
     datatype='Segmentation',
     base_lr=0.001,
@@ -76,6 +77,8 @@ def parse_input(argv=sys.argv):
                              help='Pascal VOC root folder')
     parser_conf.add_argument('--save', default=True, type=bool,
                              help='Save evaluation results')
+    parser_conf.add_argument('--plot', default=False, type=bool,
+                             help='Plot curves')
     parser_conf.add_argument('--overridecache', default=True, type=bool,
                              help='Override cache')
     parser_conf.add_argument('--parallel', default=1, type=int,
@@ -248,8 +251,162 @@ def report_fg_bg_prec_rec(prec, rec):
     return
 
 
-def print_results(statsfile):
-    ld = sio.loadmat(statsfile)
+def plot(conf):
+    if not conf['plot']:
+        return
+
+    import matplotlib
+    font = {
+        'family': 'serif',
+        'serif': ['Computer Modern'],
+        'weight': 'normal',
+        'size': 35,
+    }
+    matplotlib.rc('font', **font)
+    matplotlib.rc('text', usetex=True)
+    matplotlib.rcParams['legend.numpoints'] = 1
+
+    data = {}
+    ld = sio.loadmat(conf['stats_file'])
+    loadlist = ['prec', 'rec', 'acc']
+    for ky in loadlist:
+        data[ky] = ld['results'][0][0][ky]
+    data['thresrange'] = conf['thresrange']
+
+    def plot_prec_rec_bg(figno):
+        label = conf['plotconf']['label']
+        marker = conf['plotconf']['marker']
+        colour = conf['plotconf']['colour']
+        line = conf['plotconf']['line']
+        order = conf['plotconf']['order']
+
+        ms = conf['plotconf']['ms']  # 5.0
+        fs_label = conf['plotconf']['fs_label']  # 32
+
+        fig = plt.figure(figno, figsize=(10, 8))
+        fig.patch.set_facecolor('white')
+
+        ax = fig.add_subplot(1, 1, 1)
+        ax.grid(True)
+
+        plt.plot(data['rec'][1:-1, 0], data['prec'][1:-1, 0],
+                 linestyle=line,
+                 marker=marker,
+                 ms=ms,
+                 label=label,
+                 color=colour,
+                 zorder=order,
+                 )
+
+        plt.xlim(0, 1)
+        plt.ylim(0, 1)
+        plt.xticks([0, .2, .4, .6, .8, 1.])
+        plt.xticks([.2, .4, .6, .8, 1.])
+        plt.xlabel('recall')
+        plt.ylabel('precision')
+        plt.title('Background', y=1.1)
+        leg = plt.legend(loc=4, frameon=True, fontsize=23)
+        leg.get_frame().set_linewidth(0.0)
+        ax.tick_params(labelsize=fs_label)
+        plt.tight_layout()
+
+        plt.pause(.1)
+
+        return fig
+
+    def plot_prec_rec_combined_fg(figno):
+        label = conf['plotconf']['label']
+        marker = conf['plotconf']['marker']
+        colour = conf['plotconf']['colour']
+        line = conf['plotconf']['line']
+        order = conf['plotconf']['order']
+
+        ms = conf['plotconf']['ms']  # 5.0
+        fs_label = conf['plotconf']['fs_label']  # 32
+
+        fig = plt.figure(figno, figsize=(10, 8))
+        fig.patch.set_facecolor('white')
+        plt.suptitle('Foreground categories, averaged', y=1.1)
+
+        ax = fig.add_subplot(1, 1, 1)
+        ax.grid(True)
+
+        plt.plot(data['rec'][1:-1, 1:].mean(1), data['prec'][1:-1, 1:].mean(1),
+                 linestyle=line,
+                 marker=marker,
+                 ms=ms,
+                 label=label,
+                 color=colour,
+                 zorder=order,
+                 )
+
+        plt.xlim(0, 1)
+        plt.ylim(0, 1)
+        plt.xticks([0, .2, .4, .6, .8, 1.])
+        plt.xticks([.2, .4, .6, .8, 1.])
+        plt.xlabel('recall')
+        plt.ylabel('precision')
+        ax.tick_params(labelsize=fs_label)
+        plt.tight_layout()
+
+        plt.pause(.1)
+
+        return fig
+
+    def plot_prec_rec_classwise(figno):
+        label = conf['plotconf']['label']
+        marker = conf['plotconf']['marker']
+        colour = conf['plotconf']['colour']
+        line = conf['plotconf']['line']
+        order = conf['plotconf']['order']
+
+        ms = conf['plotconf']['ms']  # 5.0
+        fs_label = conf['plotconf']['fs_label']  # 32
+
+        fig = plt.figure(figno, figsize=(15, 15))
+        fig.patch.set_facecolor('white')
+        plt.suptitle('Foreground categories', y=1.1)
+
+        for cls in range(21):
+            if cls == 0:
+                ax = fig.add_subplot(5, 5, 21)
+            else:
+                ax = fig.add_subplot(5, 5, cls)
+
+            plt.title(get_pascal_classes_bg()[cls])
+
+            ax.grid(True)
+            plt.plot(data['rec'][1:-1, cls], data['prec'][1:-1, cls],
+                     linestyle=line,
+                     marker=marker,
+                     ms=ms,
+                     label=label,
+                     color=colour,
+                     zorder=order,
+                     )
+
+            plt.xlim(0, 1)
+            plt.ylim(0, 1)
+            ax.set_xticklabels([])
+            ax.set_yticklabels([])
+            if cls == 0:
+                plt.xlabel('recall')
+                plt.ylabel('precision')
+                ax.tick_params(labelsize=fs_label)
+
+        plt.pause(.1)
+
+        return fig
+
+    plot_fg = plot_prec_rec_combined_fg(figno=2)
+    plot_bg = plot_prec_rec_bg(figno=3)
+    plot_classwise = plot_prec_rec_classwise(figno=5)
+
+    return
+
+
+def print_results(conf):
+    ld = sio.loadmat(conf['stats_file'])
     prec = ld['results'][0][0]['prec']
     rec = ld['results'][0][0]['rec']
     acc = ld['results'][0][0]['acc']
@@ -261,6 +418,14 @@ def print_results(statsfile):
     print(prec.mean(1))
     print("Rec:")
     print(rec.mean(1))
+    print("mean precision:")
+    fgrec = rec[:, 1:].mean(1)
+    fgprec = prec[:, 1:].mean(1)
+    bgrec = rec[:, 0]
+    bgprec = prec[:, 0]
+    print(0.5 * (fgprec[fgrec > 0.2][-1] + bgprec[bgrec > 0.8][-1]))
+
+    plot(conf)
     return
 
 
@@ -284,14 +449,15 @@ def main(control, conf):
     result_dir = osp.join('cache', 'seed-test', create_token(control_token))
     conf['result_file'] = osp.join(result_dir, '%s.mat')
     conf['stats_file'] = osp.join(result_dir, 'mIoU.py.mat')
+    conf['cls_file'] = osp.join(result_dir, 'cls_res.mat')
 
     if not conf['overridecache']:
         if osp.isfile(conf['stats_file']):
-            print_results(conf['stats_file'])
+            print_results(conf)
             return
 
     compute_precrec(conf)
-    print_results(conf['stats_file'])
+    print_results(conf)
     return
 
 

@@ -62,11 +62,10 @@ def gap_fc6(n, bottom, ks, learn=1):
 
 
 def gap_fc7(n, bottom, ks, learn=1):
-    n.fc7_gap = L.Convolution(bottom, kernel_size=ks, num_output=1024, pad=(ks - 1) / 2,
-                              param=param[learn],
-                              weight_filler=dict(type='gaussian', std=0.005),
-                              bias_filler=dict(type='constant', value=0))
-    n.drop7_gap = L.Dropout(n.fc7_gap, in_place=True)
+    n.fc7_gap, n.relu7_gap = conv_relu(bottom, ks, 1024, pad=(ks - 1) / 2, param=param[learn],
+                                       weight_filler=dict(type='gaussian', std=0.005),
+                                       bias_filler=dict(type='constant', value=0))
+    n.drop7_gap = L.Dropout(n.relu7_gap, in_place=True)
     return n.drop7_gap
 
 
