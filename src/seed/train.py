@@ -61,6 +61,8 @@ def parse_input(argv=sys.argv):
     parser_conf = argparse.ArgumentParser()
     parser_conf.add_argument('--pascalroot', default='/home', type=str,
                              help='Pascal VOC root folder')
+    parser_conf.add_argument('--imagenetmeanloc', default='/home', type=str,
+                             help='Imagenet mean image location')
     parser_conf.add_argument('--gpu', default=1, type=int,
                              help='GPU ID')
     parser_conf.add_argument('--vis', default=False, type=bool,

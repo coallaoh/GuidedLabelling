@@ -72,8 +72,10 @@ def preprocess_convnet_image(im, transformer, input_size, phase):
                             margin[1], input_size - imshape[1] - margin[1],
                             cv2.BORDER_REFLECT_101)
     assert (im.shape[0] == im.shape[1] == input_size)
-    flip = np.random.choice(2) * 2 - 1
-    im = im[:, ::flip, :]
 
-    im = transformer.preprocess('data', im),
+    if phase == 'train':
+        flip = np.random.choice(2) * 2 - 1
+        im = im[:, ::flip, :]
+
+    im = transformer.preprocess('data', im)
     return im

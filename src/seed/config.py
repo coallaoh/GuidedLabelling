@@ -106,12 +106,19 @@ def config_test(control, conf, EXP_PHASE):
 
     if control['net'] == 'GAP-LowRes':
         conf['out_size'] = 21
+        conf['blobname_map'] = 'relu6_gap'
+        conf['paramname_weight'] = 'score'
     elif control['net'] == 'GAP-HighRes':
         conf['out_size'] = 41
+        conf['blobname_map'] = 'relu6_gap'
+        conf['paramname_weight'] = 'score'
     elif control['net'] == 'GAP-ROI':
         conf['out_size'] = 41
+        raise NotImplementedError
     elif control['net'] == 'GAP-DeepLab':
         conf['out_size'] = 41
+        conf['blobname_map'] = 'fc7'
+        conf['paramname_weight'] = 'score'
     else:
         raise NotImplementedError
 

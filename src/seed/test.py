@@ -24,11 +24,12 @@ conf = dict(
     save_cls=True,
     save_heat=True,
     vis=False,
+    visconf=0.5,
     shuffle=True,
     overridecache=True,
     pascalroot="/BS/joon_projects/work/",
     imagenetmeanloc="data/ilsvrc_2012_mean.npy",
-    gpu=2,
+    gpu=0,
 )
 
 control = dict(
@@ -53,7 +54,7 @@ def parse_input(argv=sys.argv):
     parser = argparse.ArgumentParser(description="Trains a seed network")
     parser.add_argument('--init', default='VGG_ILSVRC_16_layers', type=str,
                         help='Initialisation for the network')
-    parser.add_argument('--net', default='lgap_multitask', type=str,
+    parser.add_argument('--net', default='GAP-HighRes', type=str,
                         help='Network')
     parser.add_argument('--dataset', default='voc12train_aug', type=str,
                         help='Training set')
@@ -80,10 +81,14 @@ def parse_input(argv=sys.argv):
     parser_conf = argparse.ArgumentParser()
     parser_conf.add_argument('--pascalroot', default='/home', type=str,
                              help='Pascal VOC root folder')
+    parser_conf.add_argument('--imagenetmeanloc', default='/home', type=str,
+                             help='Imagenet mean image location')
     parser_conf.add_argument('--gpu', default=1, type=int,
                              help='GPU ID')
     parser_conf.add_argument('--vis', default=False, type=bool,
                              help='Visualisation')
+    parser_conf.add_argument('--visconf', default=0.5, type=float,
+                             help='Visualisation seed threshold')
     parser_conf.add_argument('--save_cls', default=True, type=bool,
                              help='Save class prediction')
     parser_conf.add_argument('--save_heat', default=True, type=bool,
@@ -123,19 +128,17 @@ def setup_net(control, control_model, control_token):
     return net
 
 
-def compute_out_heat(net, gt_cls):
-    CAM_scores = net.blobs['fc7_CAM'].data[0]
-    params = net.params['scores'][0].data[...]
+def compute_out_heat(net, gt_cls, conf):
+    CAM_scores = net.blobs[conf['blobname_map']].data[0]
+    params = net.params[conf['paramname_weight']][0].data[...]
 
     osz = conf['out_size']
 
     heat_maps = np.zeros((len(gt_cls), osz, osz))
-    heat_maps_normalised = np.zeros((len(gt_cls), osz, osz))
     for idx, cls in enumerate(gt_cls):
         i = cls - 1
         w = params[i]
         heat_maps[idx, :, :] = np.sum(CAM_scores * w[:, None, None], axis=0)
-        heat_maps_normalised[idx, :, :] = heat_maps[idx] / np.max(heat_maps[idx])
 
     return heat_maps
 
@@ -182,8 +185,8 @@ def run_test(net, out_dir, control, conf):
         net.blobs['data'].data[...][0] = preprocess_convnet_image(image, transformer, 321, 'test')
         net.forward()
 
-        heat_maps = compute_out_heat(net, gt_cls)
-        cls_preds = net.blobs['scores'].data[0, :]
+        heat_maps = compute_out_heat(net, gt_cls, conf)
+        cls_preds = net.blobs['score'].data[0, :]
 
         pred_list.append(cls_preds.copy())
         id_list.append(im_id)
@@ -201,23 +204,23 @@ def run_test(net, out_dir, control, conf):
             def visualise_data():
                 fig = plt.figure(0, figsize=(15, 10))
                 fig.suptitle('ID:{}'.format(im_id))
-                ax = fig.add_subplot(1, 3, 1)
+                ax = fig.add_subplot(1, 2, 1)
                 ax.set_title('Original image')
                 pim(image)
 
-                ax = fig.add_subplot(2, 5, 3)
-                ax.set_title('Saliency')
+                ax = fig.add_subplot(2, 4, 3)
+                ax.set_title('FG class prediction')
                 ax.imshow(seg, cmap="nipy_spectral", clim=(0, 30))
-                ax = fig.add_subplot(2, 5, 8)
+                ax = fig.add_subplot(2, 4, 7)
                 ax.imshow(image)
                 ax.imshow(seg, alpha=.5, cmap="nipy_spectral", clim=(0, 30))
 
-                ax = fig.add_subplot(2, 5, 4)
-                ax.set_title('Saliency')
-                ax.imshow(seg * (confidence > .2), cmap="nipy_spectral", clim=(0, 30))
-                ax = fig.add_subplot(2, 5, 9)
+                ax = fig.add_subplot(2, 4, 4)
+                ax.set_title('Seed: heatmap thresholded @' + str(conf['visconf']))
+                ax.imshow(seg * (confidence > conf['visconf']), cmap="nipy_spectral", clim=(0, 30))
+                ax = fig.add_subplot(2, 4, 8)
                 ax.imshow(image)
-                ax.imshow(seg * (confidence > .2), alpha=.5, cmap="nipy_spectral", clim=(0, 30))
+                ax.imshow(seg * (confidence > conf['visconf']), alpha=.5, cmap="nipy_spectral", clim=(0, 30))
 
                 for iii in range(5):
                     fig.axes[iii].get_xaxis().set_visible(False)
