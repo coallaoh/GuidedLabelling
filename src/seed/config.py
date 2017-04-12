@@ -126,3 +126,48 @@ def config_test(control, conf, EXP_PHASE):
     pprint.pprint(control)
 
     return control, control_model, control_token, conf
+
+
+def config_eval(control, conf, EXP_PHASE):
+    assert (EXP_PHASE == 'seed-eval')
+
+    defaults = dict(
+        init='VGG_ILSVRC_16_layers',
+        dataset='voc12train_aug',
+        datatype='Segmentation',
+        base_lr=0.001,
+        batch_size=15,
+        balbatch='clsbal',
+        test_iter=8000,
+        test_datatype='Segmentation',
+        test_ranking='none',
+        test_gtcls='use',
+    )
+
+    control_token = control.copy()
+    for ky in defaults:
+        if control_token[ky] == defaults[ky]:
+            control_token.pop(ky)
+
+    conf['EXP_PHASE'] = EXP_PHASE
+    conf['nclasses'] = 20
+    conf['year'] = '20' + control['test_dataset'][3:5]
+    conf['testset'] = control['test_dataset'][5:]
+    conf['imgsetpath'] = osp.join(conf['pascalroot'], 'VOC' + conf['year'], 'ImageSets', 'Segmentation', 'list',
+                                  '%s.txt')
+    if '_aug' in conf['testset']:
+        conf['clsimgpath'] = osp.join(conf['pascalroot'], 'VOC' + conf['year'], 'SegmentationClassAug', '%s.png')
+    else:
+        conf['clsimgpath'] = osp.join(conf['pascalroot'], 'VOC' + conf['year'], 'SegmentationClass', '%s.png')
+
+    conf['thresrange'] = np.hstack([
+        np.linspace(-10, -2, 9),
+        np.linspace(-1, -0.01, 100),
+        np.linspace(0, 0.99, 100),
+    ])
+    conf['threstype'] = 'generic'
+
+    pprint.pprint(conf)
+    pprint.pprint(control)
+
+    return control, control_token, conf

@@ -23,7 +23,7 @@ EXP_PHASE = 'seed-test'
 conf = dict(
     save_cls=True,
     save_heat=True,
-    vis=False,
+    vis=True,
     visconf=0.5,
     shuffle=True,
     overridecache=True,
@@ -34,7 +34,7 @@ conf = dict(
 
 control = dict(
     init='VGG_ILSVRC_16_layers',
-    net='GAP-LowRes',
+    net='GAP-HighRes',
     dataset='voc12train_aug',
     datatype='Segmentation',
     base_lr=0.001,
@@ -176,7 +176,7 @@ def run_test(net, out_dir, control, conf):
                     continue
 
         ann = load_pascal_annotation(im_id, conf['pascalroot'], year)
-        gt_cls = ann['gt_classes']  # Should be 0-20
+        gt_cls = np.unique(ann['gt_classes'])  # Should be 0-20
 
         imloc = os.path.join(conf['pascalroot'], 'VOC' + year, 'JPEGImages', im_id + '.jpg')
         image = load_image_PIL(imloc)
@@ -192,14 +192,7 @@ def run_test(net, out_dir, control, conf):
         id_list.append(im_id)
 
         if conf['vis']:
-            heat_maps_os = nd.zoom(heat_maps,
-                                   [1,
-                                    float(imshape_original[0]) / heat_maps.shape[1],
-                                    float(imshape_original[1]) / heat_maps.shape[2]],
-                                   order=1)
-            heat_maps_norm = heat_maps_os / heat_maps_os.max(axis=1).max(axis=1).reshape((-1, 1, 1))
-            confidence = heat_maps_norm.max(0)
-            seg = gt_cls[heat_maps_norm.argmax(axis=0)]
+            seg, confidence = heatmap2segconf(heat_maps, imshape_original, gt_cls)
 
             def visualise_data():
                 fig = plt.figure(0, figsize=(15, 10))
