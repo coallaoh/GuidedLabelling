@@ -45,7 +45,7 @@ control = dict(
 ####
 
 def parse_input(argv=sys.argv):
-    parser = argparse.ArgumentParser(description="Trains a seed network")
+    parser = argparse.ArgumentParser(description="Evaluates seeds as localiser (mP, prec, rec)")
     parser.add_argument('--init', default='VGG_ILSVRC_16_layers', type=str,
                         help='Initialisation for the network')
     parser.add_argument('--net', default='GAP-HighRes', type=str,
@@ -67,7 +67,7 @@ def parse_input(argv=sys.argv):
     parser.add_argument('--test_datatype', default='Segmentation', type=str,
                         help='Type of test data')
     parser.add_argument('--test_ranking', default='none', type=str,
-                        help='When testing, dont rank priority according to size @ 20% max score as in lamperts')
+                        help='When testing, dont rank priority according to size @ 20 percent max score as in lamperts')
     parser.add_argument('--test_gtcls', default='use', type=str,
                         help='Use GT class information at test time')
     control = vars(parser.parse_known_args(argv)[0])

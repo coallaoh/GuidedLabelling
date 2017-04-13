@@ -1,15 +1,13 @@
 __author__ = 'joon'
 
-import sys
-
-sys.path.insert(0, 'lib')
-sys.path.insert(0, 'ResearchTools')
-
-from imports.basic_modules import *
-from imports.ResearchTools import *
+import numpy as np
+import os.path as osp
+import random
+import scipy
+from xml.dom import minidom
 
 
-def get_pascal_indexlist(root, year, type, split, shuffle=False):
+def get_pascal_indexlist(root, year, type, split, shuffle=False, n=0, N=1):
     pascal_list_file = osp.join(root, 'VOC' + year, 'ImageSets', type,
                                 'list', split + '.txt')
     pascal_tmp_list = [line.rstrip('\n') for line in open(pascal_list_file)]
@@ -22,6 +20,11 @@ def get_pascal_indexlist(root, year, type, split, shuffle=False):
     if shuffle:
         random.seed(132)
         random.shuffle(indexlist)
+
+    if N > 1:
+        start_idx = np.round(n * len(indexlist) / float(N))
+        end_idx = np.round((n + 1) * len(indexlist) / float(N))
+        indexlist = indexlist[start_idx:end_idx]
 
     return indexlist
 

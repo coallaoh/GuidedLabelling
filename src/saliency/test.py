@@ -42,7 +42,7 @@ control = dict(
 ####
 
 def parse_input(argv=sys.argv):
-    parser = argparse.ArgumentParser(description="Trains a seed network")
+    parser = argparse.ArgumentParser(description="Tests saliency network")
     parser.add_argument('--net', default='DeepLabv2_ResNet', type=str,
                         help='Network')
     parser.add_argument('--dataset', default='MSRA', type=str,
@@ -119,12 +119,8 @@ def process_test_output_prob(prob, margins, H_original, W_original, H, W, input_
 def run_test(net, out_dir, control, conf):
     year = '20' + control['test_dataset'][3:5]
     pascal_list = get_pascal_indexlist(conf['pascalroot'], year, control['test_datatype'], control['test_dataset'][5:],
-                                       shuffle=conf['shuffle'])
+                                       shuffle=conf['shuffle'], n=conf['n'], N=conf['N'])
 
-    num_test = len(pascal_list)
-    start_idx = int(np.round(conf['n'] * num_test / float(conf['N'])))
-    end_idx = int(np.round((conf['n'] + 1) * num_test / float(conf['N'])))
-    pascal_list = pascal_list[start_idx:end_idx]
     num_test = len(pascal_list)
 
     print('%d images for testing' % num_test)
