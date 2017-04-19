@@ -7,6 +7,22 @@ import scipy
 from xml.dom import minidom
 
 
+def load_pascal_conf(control, conf):
+    conf['nclasses'] = 20
+    conf['year'] = '20' + control['test_dataset'][3:5]
+    conf['testset'] = control['test_dataset'][5:]
+    conf['imgsetpath'] = osp.join(conf['pascalroot'], 'VOC' + conf['year'], 'ImageSets', 'Segmentation', 'list',
+                                  '%s.txt')
+    if '_aug' in conf['testset']:
+        conf['clsimgpath'] = osp.join(conf['pascalroot'], 'VOC' + conf['year'], 'SegmentationClassAug', '%s.png')
+    else:
+        conf['clsimgpath'] = osp.join(conf['pascalroot'], 'VOC' + conf['year'], 'SegmentationClass', '%s.png')
+
+    conf['clsgt'] = osp.join(conf['pascalroot'], 'VOC' + conf['year'], 'ImageSets', 'Main',
+                             '%s_' + conf['testset'] + '.txt')
+
+    return
+
 def get_pascal_indexlist(root, year, type, split, shuffle=False, n=0, N=1):
     pascal_list_file = osp.join(root, 'VOC' + year, 'ImageSets', type,
                                 'list', split + '.txt')

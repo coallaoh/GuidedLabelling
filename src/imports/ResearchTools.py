@@ -16,3 +16,4 @@ from image.mask_box import mask2bbox, bbox_area, bbox_ratio, carve_bbox_to_im
 from image.cc import compute_cc
 from image.bw_to_rgb import bw_to_rgb
 from image.crop import random_crop, random_translation
+from image.iou import compute_iou

@@ -154,12 +154,20 @@ class BatchLoader_PASCAL(object):
 
         # <<LABEL>>
         multilabel = np.zeros(20).astype(np.float32)
-        anns = load_pascal_annotation(index, self.conf['pascalroot'], self.pascal_year)
-        for cls in anns['gt_classes']:  # anns['gt_classes'] is 0 for bg, 1~20 for fg categories
+
+        if '_aug' in self.pascal_split:
+            gtpath = osp.join(self.conf['pascalroot'], 'VOC' + self.pascal_year, 'SegmentationClassAug', '%s.png')
+        else:
+            gtpath = osp.join(self.conf['pascalroot'], 'VOC' + self.pascal_year, 'SegmentationClass', '%s.png')
+
+        gtfile = gtpath % (index)
+        gt = np.array(Image.open(gtfile)).astype(np.float)
+        gt_cls = np.unique(gt)
+        gt_cls_nobg = gt_cls[(gt_cls != 0) & (gt_cls != 255)]
+        for cls in gt_cls_nobg:  # anns['gt_classes'] is 0 for bg, 1~20 for fg categories
             multilabel[cls - 1] = 1
 
         self._cur += 1
-
         return im, multilabel
 
     def get_pascal_gt(self, index):

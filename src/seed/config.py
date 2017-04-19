@@ -8,6 +8,7 @@ sys.path.insert(0, 'ResearchTools')
 
 from imports.basic_modules import *
 from imports.ResearchTools import *
+from imports.libmodules import *
 
 
 def config_train(control, conf, EXP_PHASE):
@@ -104,6 +105,8 @@ def config_test(control, conf, EXP_PHASE):
     else:
         raise NotImplementedError
 
+    load_pascal_conf(control, conf)
+
     if control['net'] == 'GAP-LowRes':
         conf['out_size'] = 21
         conf['blobname_map'] = 'relu6_gap'
@@ -150,18 +153,8 @@ def config_eval(control, conf, EXP_PHASE):
             control_token.pop(ky)
 
     conf['EXP_PHASE'] = EXP_PHASE
-    conf['nclasses'] = 20
-    conf['year'] = '20' + control['test_dataset'][3:5]
-    conf['testset'] = control['test_dataset'][5:]
-    conf['imgsetpath'] = osp.join(conf['pascalroot'], 'VOC' + conf['year'], 'ImageSets', 'Segmentation', 'list',
-                                  '%s.txt')
-    if '_aug' in conf['testset']:
-        conf['clsimgpath'] = osp.join(conf['pascalroot'], 'VOC' + conf['year'], 'SegmentationClassAug', '%s.png')
-    else:
-        conf['clsimgpath'] = osp.join(conf['pascalroot'], 'VOC' + conf['year'], 'SegmentationClass', '%s.png')
 
-    conf['clsgt'] = osp.join(conf['pascalroot'], 'VOC' + conf['year'], 'ImageSets', 'Main',
-                             '%s_' + conf['testset'] + '.txt')
+    load_pascal_conf(control, conf)
 
     conf['thresrange'] = np.hstack([
         np.linspace(-10, -2, 9),
@@ -208,10 +201,7 @@ def config_eval_cls(control, conf, EXP_PHASE):
             control_token.pop(ky)
 
     conf['EXP_PHASE'] = EXP_PHASE
-    conf['year'] = '20' + control['test_dataset'][3:5]
-    conf['testset'] = control['test_dataset'][5:]
-    conf['clsgt'] = osp.join(conf['pascalroot'], 'VOC' + conf['year'], 'ImageSets', 'Main',
-                             '%s_' + conf['testset'] + '.txt')
+    load_pascal_conf(control, conf)
 
     pprint.pprint(conf)
     pprint.pprint(control)

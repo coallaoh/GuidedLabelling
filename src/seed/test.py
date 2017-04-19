@@ -23,13 +23,13 @@ EXP_PHASE = 'seed-test'
 conf = dict(
     save_cls=True,
     save_heat=True,
-    vis=True,
+    vis=False,
     visconf=0.5,
     shuffle=True,
     overridecache=True,
     pascalroot="/BS/joon_projects/work/",
     imagenetmeanloc="data/ilsvrc_2012_mean.npy",
-    gpu=0,
+    gpu=1,
 )
 
 control = dict(
@@ -41,7 +41,7 @@ control = dict(
     batch_size=15,
     balbatch='clsbal',
     test_iter=8000,
-    test_dataset='voc12val',
+    test_dataset='voc12train_aug',
     test_datatype='Segmentation',
     test_ranking='none',
     test_gtcls='use',
@@ -175,8 +175,10 @@ def run_test(net, out_dir, control, conf):
                     print('skipping')
                     continue
 
-        ann = load_pascal_annotation(im_id, conf['pascalroot'], year)
-        gt_cls = np.unique(ann['gt_classes'])  # Should be 0-20
+        gtfile = conf['clsimgpath'] % (im_id)
+        gt = np.array(Image.open(gtfile)).astype(np.float)
+        gt_cls = np.unique(gt)
+        gt_cls_nobg = gt_cls[(gt_cls != 0) & (gt_cls != 255)]
 
         imloc = os.path.join(conf['pascalroot'], 'VOC' + year, 'JPEGImages', im_id + '.jpg')
         image = load_image_PIL(imloc)
@@ -185,14 +187,14 @@ def run_test(net, out_dir, control, conf):
         net.blobs['data'].data[...][0] = preprocess_convnet_image(image, transformer, 321, 'test')
         net.forward()
 
-        heat_maps = compute_out_heat(net, gt_cls, conf)
+        heat_maps = compute_out_heat(net, gt_cls_nobg, conf)
         cls_preds = net.blobs['score'].data[0, :]
 
         pred_list.append(cls_preds.copy())
         id_list.append(im_id)
 
         if conf['vis']:
-            seg, confidence = heatmap2segconf(heat_maps, imshape_original, gt_cls)
+            seg, confidence = heatmap2segconf(heat_maps, imshape_original, gt_cls_nobg)
 
             def visualise_data():
                 fig = plt.figure(0, figsize=(15, 10))
