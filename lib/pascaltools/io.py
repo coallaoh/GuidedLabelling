@@ -21,6 +21,8 @@ def load_pascal_conf(control, conf):
     conf['clsgt'] = osp.join(conf['pascalroot'], 'VOC' + conf['year'], 'ImageSets', 'Main',
                              '%s_' + conf['testset'] + '.txt')
 
+    conf['imgpath'] = osp.join(conf['pascalroot'], 'VOC' + conf['year'], 'JPEGImages', '%s.jpg')
+
     return
 
 def get_pascal_indexlist(root, year, type, split, shuffle=False, n=0, N=1):

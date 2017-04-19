@@ -35,8 +35,8 @@ def config_generate(control, conf, EXP_PHASE):
     from seed.config import config_test as config_test_seed
     from saliency.config import config_test as config_test_saliency
 
-    control_seed, _, control_seed_token, _ = config_test_seed(control_seed, {}, 'seed-test')
-    control_saliency, control_saliency_token, _ = config_test_saliency(control_saliency, {}, 'saliency-test')
+    control_seed, _, control_seed_token, _ = config_test_seed(control_seed, conf, 'seed-test')
+    control_saliency, control_saliency_token, _ = config_test_saliency(control_saliency, conf, 'saliency-test')
 
     defaults = dict(
         # seed

@@ -26,7 +26,7 @@ conf = dict(
     overridecache=True,
     pascalroot="/BS/joon_projects/work",
     gpu=0,
-    n=3,
+    n=0,
     N=4,
 )
 
