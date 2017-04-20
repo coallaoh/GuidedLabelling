@@ -11,11 +11,11 @@ from imports.basic_modules import *
 from imports.ResearchTools import *
 
 # Pipeline of the algorithm
-TRAIN_SEED = False
-TEST_SEED = False
-LOAD_SALIENCY = False
-GENERATE_GUIDE = False
-TRAIN_SEG = False
+TRAIN_SEED = True
+TEST_SEED = True
+LOAD_SALIENCY = True
+GENERATE_GUIDE = True
+TRAIN_SEG = True
 TEST_SEG = True
 
 # Common options
