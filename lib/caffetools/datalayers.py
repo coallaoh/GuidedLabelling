@@ -173,3 +173,83 @@ class BatchLoader_PASCAL(object):
     def get_pascal_gt(self, index):
         anns = load_pascal_annotation(index, self.conf['pascalroot'], self.pascal_year)
         return np.unique(anns['gt_classes'])
+
+
+class DeepLabData(caffe.Layer):
+    def setup(self, bottom, top):
+        self.top_names = ['data', 'label']
+        params = eval(self.param_str)
+
+        self.control = params['control']
+        self.conf = params['conf']
+        self.batch_loader = BatchLoader_PASCAL_Labelling(params)
+
+        top[0].reshape(self.control['batch_size'], 3, self.conf['input_size'], self.conf['input_size'])
+        top[1].reshape(self.control['batch_size'], 1, self.conf['output_size'], self.conf['output_size'])
+
+    def forward(self, bottom, top):
+        for itt in range(self.control['batch_size']):
+            im, label = self.batch_loader.load_next_image()
+            top[0].data[itt, ...] = im
+            top[1].data[itt, ...] = label
+
+    def reshape(self, bottom, top):
+        pass
+
+    def backward(self, top, propagate_down, bottom):
+        pass
+
+
+class BatchLoader_PASCAL_Labelling(object):
+    """
+    This class abstracts away the loading of images.
+    Images can either be loaded singly, or in a batch. The latter is used for
+    the asyncronous data layer to preload batches while other processing is
+    performed.
+    """
+
+    def __init__(self, params):
+        self.control = params['control']
+        self.conf = params['conf']
+
+        self.pascal_year = '20' + self.control['dataset'][3:5]
+        self.pascal_split = self.control['dataset'][5:]
+        self.pascal_type = self.control['datatype']
+
+        self.indexlist = get_pascal_indexlist(self.conf['pascalroot'], self.pascal_year, self.pascal_type,
+                                              self.pascal_split)
+
+        self.transformer = set_preprocessor_without_net(
+            [self.control['batch_size'], 3, self.conf['input_size'], self.conf['input_size']],
+            mean_image=np.load(self.conf['imagenetmeanloc']).mean(1).mean(1))
+
+        print "BatchLoader initialized with {} images".format(len(self.indexlist))
+        self.indexlist_original = self.indexlist.copy()
+
+        self._cur = 0
+        self.start = True
+
+    def load_next_image(self):
+        # Did we finish an epoch?
+        if self._cur == len(self.indexlist) or self.start:
+            self.start = False
+            self._cur = 0
+            np.random.shuffle(self.indexlist)
+
+        # <<LOAD>>
+        # Load image
+        index = self.indexlist[self._cur]  # Get the image index
+        image_file_name = osp.join(self.conf['pascalroot'], 'VOC' + self.pascal_year, 'JPEGImages', index + '.jpg')
+        im = load_image_PIL(image_file_name)
+
+        # Load label
+        label_file_name = osp.join(self.conf['sup_dir'], index + '.png')
+        label = load_image_PIL(label_file_name)
+
+        # Process
+        im, label = preprocess_convnet_image_label(im, label, self.transformer, self.conf['input_size'], 'train')
+        label = scipy.misc.imresize(label, [self.conf['output_size'], self.conf['output_size']], interp='nearest',
+                                    mode='F').astype(np.float32)
+
+        self._cur += 1
+        return im, label

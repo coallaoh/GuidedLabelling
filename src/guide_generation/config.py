@@ -11,16 +11,6 @@ from imports.ResearchTools import *
 from imports.libmodules import *
 
 
-def subcontrol(control, token):
-    control_sub = dict()
-    kys = control.keys()
-    for ky in kys:
-        if ky[:2] == token + '_':
-            control_sub[ky[2:]] = control[ky]
-
-    return control_sub
-
-
 def config_generate(control, conf, EXP_PHASE):
     assert (EXP_PHASE == 'guide-generate')
 

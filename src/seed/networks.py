@@ -166,7 +166,7 @@ def gap(conf, control, phase):
             conf=conf,
         )))
     elif phase == 'test':
-        n.data = L.DummyData(num=1, channels=3, height=321, width=321)
+        n.data = L.DummyData(num=1, channels=3, height=conf['input_size'], width=conf['input_size'])
     else:
         raise NotImplementedError
 

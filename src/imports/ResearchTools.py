@@ -4,6 +4,7 @@ import sys
 
 sys.path.insert(0, 'ResearchTools')
 from util.construct_filenames import create_token
+from util.construct_controls import subcontrol
 from util.ios import mkdir_if_missing, save_to_cache, load_from_cache
 from util.maths import Jsoftmax, proj_lp, proj_lf, compute_percentiles
 from util.dict_with_dot import Map

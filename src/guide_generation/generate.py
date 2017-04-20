@@ -20,14 +20,14 @@ from config import config_generate
 EXP_PHASE = 'guide-generate'
 
 conf = dict(
-    vis=True,
+    vis=False,
     save=True,
     shuffle=True,
     overridecache=True,
     pascalroot="/BS/joon_projects/work",
     gpu=0,
     n=0,
-    N=4,
+    N=1,
 )
 
 control = dict(
@@ -53,7 +53,7 @@ control = dict(
     s_test_datatype='Segmentation',
 
     gtcls='use',
-    seedthres=50,
+    seedthres=20,
     salthres=50,
     # guiderule='G0',
     # guiderule='G1',

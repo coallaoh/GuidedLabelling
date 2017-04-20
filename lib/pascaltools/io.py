@@ -25,6 +25,7 @@ def load_pascal_conf(control, conf):
 
     return
 
+
 def get_pascal_indexlist(root, year, type, split, shuffle=False, n=0, N=1):
     pascal_list_file = osp.join(root, 'VOC' + year, 'ImageSets', type,
                                 'list', split + '.txt')

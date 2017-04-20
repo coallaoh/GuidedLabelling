@@ -83,3 +83,35 @@ def preprocess_convnet_image(im, transformer, input_size, phase):
 
     im = transformer.preprocess('data', im)
     return im
+
+
+def preprocess_convnet_image_label(im, label, transformer, input_size, phase):
+    if phase == 'train':
+        im, coords = random_crop(im, return_coords=True)
+        label = label[coords['x0']:coords['x1'], coords['y0']:coords['y1']]
+    elif phase == 'test':
+        pass
+    else:
+        raise NotImplementedError
+
+    imshape_postcrop = im.shape[:2]
+    im = scipy.misc.imresize(im, input_size / float(max(imshape_postcrop)))
+    label = scipy.misc.imresize(label, input_size / float(max(imshape_postcrop)), interp='nearest', mode='F')
+
+    imshape = im.shape[:2]
+    margin = [(input_size - imshape[0]) // 2, (input_size - imshape[1]) // 2]
+    im = cv2.copyMakeBorder(im, margin[0], input_size - imshape[0] - margin[0],
+                            margin[1], input_size - imshape[1] - margin[1],
+                            cv2.BORDER_REFLECT_101)
+    label = cv2.copyMakeBorder(label, margin[0], input_size - imshape[0] - margin[0],
+                               margin[1], input_size - imshape[1] - margin[1],
+                               cv2.BORDER_REFLECT_101)
+    assert (im.shape[0] == im.shape[1] == input_size)
+
+    if phase == 'train':
+        flip = np.random.choice(2) * 2 - 1
+        im = im[:, ::flip, :]
+        label = label[:, ::flip]
+
+    im = transformer.preprocess('data', im)
+    return im, label
