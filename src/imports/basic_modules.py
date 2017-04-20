@@ -1,23 +1,21 @@
 __author__ = 'joon'
 
 import sys
-import os
-import numpy as np
-import os.path as osp
-import matplotlib.pyplot as plt
-import datetime
-import scipy.ndimage as nd
-from matplotlib.pyplot import imshow as pim
-import random
-import scipy.io as sio
-import scipy
-from PIL import Image
 import time
-from matplotlib import cm
-import pylab
+import os
+import os.path as osp
+from xml.dom import minidom
+import random
 import pprint
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib import cm
+from matplotlib.pyplot import imshow as pim
+import scipy
+import scipy.io as sio
+import scipy.ndimage as nd
+from PIL import Image
 import pickle
 import argparse
-from xml.dom import minidom
 import cv2
 import multiprocessing

@@ -1,2 +1,10 @@
+numpy
+pprint
+pillow
+matplotlib
+scipy
 protobuf
+argparse
+multiprocessing
+opencv-python
 git+https://github.com/lucasb-eyer/pydensecrf.git
