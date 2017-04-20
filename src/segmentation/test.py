@@ -176,7 +176,7 @@ def write_proto(testproto, conf, control):
     return
 
 
-def setup_net(control, control_model, control_token):
+def setup_net(control, control_model, control_token, conf):
     # prototxt
     protodir = osp.join('models', EXP_PHASE, create_token(control_token))
     mkdir_if_missing(protodir)
@@ -303,7 +303,7 @@ def main(control, conf):
     mkdir_if_missing(out_dir)
     print('saving to: {}'.format(out_dir))
 
-    net = setup_net(control, control_model, control_token)
+    net = setup_net(control, control_model, control_token, conf)
 
     run_test(net, out_dir, control, conf)
     return
