@@ -22,7 +22,7 @@ EXP_PHASE = 'seg-test'
 
 conf = dict(
     save=True,
-    vis=False,
+    vis=True,
     shuffle=True,
     overridecache=True,
     pascalroot="/BS/joon_projects/work/",
@@ -220,9 +220,9 @@ def run_test(net, out_dir, control, conf):
 
         inst = idx
         im_id = pascal_list[inst]
-        outfile = osp.join(out_dir, im_id + '.mat')
+        outfile = osp.join(out_dir, im_id + '.png')
 
-        if conf['save_heat']:
+        if conf['save']:
             if not conf['overridecache']:
                 if osp.isfile(outfile):
                     print('skipping')
@@ -238,15 +238,16 @@ def run_test(net, out_dir, control, conf):
         net.blobs['data'].data[...][0] = preprocess_convnet_image(image, transformer, 321, 'test')
         net.forward()
 
-        scoremap = net.blobs['scoremap'].data[0]
+        scoremap = net.blobs['fc8_voc12'].data[0]
         scoremap_originalshape = nd.zoom(scoremap, [1, imshape_original[0] / float(conf['output_size']),
-                                                    imshape_original[1] / float(conf['output_size'])], order=1)
-        seg_raw = scoremap_originalshape.argmax(0)
+                                                    imshape_original[1] / float(conf['output_size'])],
+                                         order=1).transpose((1, 2, 0))
+        seg_raw = scoremap_originalshape.argmax(2)
 
         if control['test_pcrf'] != 'none':
-            probmap_originalshape = Jsoftmax(scoremap_originalshape, axis=0)
-            probmap_originalshape_smth = CRF(image, probmap_originalshape, crf_param=control['test_pcrf'])
-            seg = probmap_originalshape_smth.argmax(0).astype(np.uint8)
+            probmap_originalshape = Jsoftmax(scoremap_originalshape, axis=2)
+            probmap_originalshape_smth = CRF(image.copy(), probmap_originalshape, crf_param=control['test_pcrf'])
+            seg = probmap_originalshape_smth.argmax(2).astype(np.uint8)
         else:
             seg = seg_raw.copy().astype(np.uint8)
 
@@ -255,24 +256,24 @@ def run_test(net, out_dir, control, conf):
             def visualise_data():
                 fig = plt.figure(0, figsize=(15, 10))
                 fig.suptitle('ID:{}'.format(im_id))
-                ax = fig.add_subplot(2, 6, 1)
+                ax = fig.add_subplot(2, 3, 1)
                 ax.set_title('Original image')
                 ax.imshow(image)
-                ax = fig.add_subplot(2, 6, 4)
+                ax = fig.add_subplot(2, 3, 4)
                 ax.imshow(image)
                 ax.imshow(gt, alpha=.5, cmap="nipy_spectral", clim=(0, 30))
 
-                ax = fig.add_subplot(2, 6, 2)
+                ax = fig.add_subplot(2, 3, 2)
                 ax.set_title('Raw output')
                 ax.imshow(seg_raw, cmap="nipy_spectral", clim=(0, 30))
-                ax = fig.add_subplot(2, 6, 5)
+                ax = fig.add_subplot(2, 3, 5)
                 ax.imshow(image)
                 ax.imshow(seg_raw, alpha=.5, cmap="nipy_spectral", clim=(0, 30))
 
-                ax = fig.add_subplot(2, 6, 3)
+                ax = fig.add_subplot(2, 3, 3)
                 ax.set_title('Postprocessed')
                 ax.imshow(seg, cmap="nipy_spectral", clim=(0, 30))
-                ax = fig.add_subplot(2, 6, 6)
+                ax = fig.add_subplot(2, 3, 6)
                 ax.imshow(image)
                 ax.imshow(seg, alpha=.5, cmap="nipy_spectral", clim=(0, 30))
 
