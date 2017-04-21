@@ -15,7 +15,7 @@ $ git clone https://github.com/coallaoh/GuidedLabelling.git --recursive
 $ cd caffe
 ```
 
-Follow caffe installation to configure Makefile.config
+Follow [caffe installation](http://caffe.berkeleyvision.org/installation.html) to configure Makefile.config
 
 ```bash
 $ make -j50 && make pycaffe
