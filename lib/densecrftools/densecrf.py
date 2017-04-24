@@ -1,5 +1,6 @@
 import pydensecrf.densecrf as DenseCRF
 import numpy as np
+from matplotlib.pyplot import imshow as pim
 
 
 def CRF(image, unary, crf_param, scale_factor=1.0, maxiter=10):
@@ -33,7 +34,7 @@ def CRF(image, unary, crf_param, scale_factor=1.0, maxiter=10):
 
     # set unary potentials
     # crf.set_unary_energy(-unary.ravel().astype('float32'))
-    crf.setUnaryEnergy(-unary.transpose((2, 1, 0)).reshape((nlabels, -1)).copy(order='C').astype('float32'))
+    crf.setUnaryEnergy(-unary.transpose((2, 0, 1)).reshape((nlabels, -1)).copy(order='C').astype('float32'))
 
     # set pairwise potentials
     w1 = bi_w
@@ -63,6 +64,6 @@ def CRF(image, unary, crf_param, scale_factor=1.0, maxiter=10):
                              normalization=DenseCRF.NORMALIZE_SYMMETRIC)
 
     # run inference
-    prediction = np.array(crf.inference(maxiter)).reshape((nlabels, W, H)).transpose((2, 1, 0))
+    prediction = np.array(crf.inference(maxiter)).reshape((nlabels, H, W)).transpose((1, 2, 0))
 
     return prediction

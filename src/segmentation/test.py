@@ -22,9 +22,9 @@ EXP_PHASE = 'seg-test'
 
 conf = dict(
     save=True,
-    vis=False,
+    vis=True,
     shuffle=True,
-    overridecache=False,
+    overridecache=True,
     pascalroot="/BS/joon_projects/work/",
     imagenetmeanloc="data/ilsvrc_2012_mean.npy",
     gpu=1,
@@ -72,7 +72,7 @@ control = dict(
     test_iter=8000,
     test_dataset='voc12val',
     test_datatype='Segmentation',
-    test_pcrf='none',
+    test_pcrf='deeplab',
 )
 
 
@@ -242,18 +242,18 @@ def run_test(net, out_dir, control, conf):
         image = load_image_PIL(imloc)
         imshape_original = image.shape[:2]
 
-        net.blobs['data'].data[...][0] = preprocess_convnet_image(image, transformer, 321, 'test')
+        net.blobs['data'].data[...][0], confs_process = preprocess_convnet_image(image, transformer, 321, 'test',
+                                                                                 return_deprocess_confs=True)
         net.forward()
 
         scoremap = net.blobs['fc8_voc12'].data[0]
-        scoremap_originalshape = nd.zoom(scoremap, [1, imshape_original[0] / float(conf['output_size']),
-                                                    imshape_original[1] / float(conf['output_size'])],
-                                         order=1).transpose((1, 2, 0))
-        seg_raw = scoremap_originalshape.argmax(2)
+        scoremap = deprocess_convnet_label(scoremap, confs_process).transpose((1, 2, 0))
+        seg_raw = scoremap.argmax(2)
 
         if control['test_pcrf'] != 'none':
-            probmap_originalshape = Jsoftmax(scoremap_originalshape, axis=2)
-            probmap_originalshape_smth = CRF(image.copy(), probmap_originalshape, crf_param=control['test_pcrf'])
+            probmap_originalshape = Jsoftmax(scoremap, axis=2)
+            probmap_originalshape_smth = CRF(image.copy(), np.log(probmap_originalshape),
+                                             crf_param=control['test_pcrf'])
             seg = probmap_originalshape_smth.argmax(2).astype(np.uint8)
         else:
             seg = seg_raw.copy().astype(np.uint8)

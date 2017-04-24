@@ -2,16 +2,16 @@ __author__ = 'joon'
 
 import sys
 
+sys.path.insert(0, 'src')
 sys.path.insert(0, 'lib')
 sys.path.insert(0, 'ResearchTools')
 
-import numpy as np
-import scipy
-import cv2
+from imports.basic_modules import *
+from imports.import_caffe import *
+from imports.ResearchTools import *
+from imports.libmodules import *
 
 from image.crop import random_crop
-
-from imports.import_caffe import *
 
 
 def set_preprocessor(net, mean_image=None):
@@ -59,7 +59,7 @@ def deprocess_net_image(image, subtract_mean=True):
     return image
 
 
-def preprocess_convnet_image(im, transformer, input_size, phase):
+def preprocess_convnet_image(im, transformer, input_size, phase, return_deprocess_confs=False):
     if phase == 'train':
         im = random_crop(im)
     elif phase == 'test':
@@ -82,7 +82,25 @@ def preprocess_convnet_image(im, transformer, input_size, phase):
         im = im[:, ::flip, :]
 
     im = transformer.preprocess('data', im)
-    return im
+    if return_deprocess_confs:
+        return im, dict(margin=margin, input_size=input_size, imshape=imshape, im_original_shape=imshape_postcrop)
+    else:
+        return im
+
+
+def deprocess_convnet_label(label, confs):
+    label_outshape = label.shape[1]
+    label = nd.zoom(label,
+                    [1, float(confs['input_size']) / label_outshape, float(confs['input_size']) / label_outshape],
+                    order=1)
+
+    label = label[:, confs['margin'][0]: (confs['imshape'][0] + confs['margin'][0]),
+            confs['margin'][1]:(confs['imshape'][1] + confs['margin'][1])]
+
+    label = nd.zoom(label, [1, float(confs['im_original_shape'][0]) / confs['imshape'][0],
+                            float(confs['im_original_shape'][1]) / confs['imshape'][1]], order=1)
+
+    return label
 
 
 def preprocess_convnet_image_label(im, label, transformer, input_size, phase):
