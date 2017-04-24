@@ -22,9 +22,9 @@ EXP_PHASE = 'seg-test'
 
 conf = dict(
     save=True,
-    vis=True,
+    vis=False,
     shuffle=True,
-    overridecache=True,
+    overridecache=False,
     pascalroot="/BS/joon_projects/work/",
     imagenetmeanloc="data/ilsvrc_2012_mean.npy",
     gpu=1,
@@ -60,7 +60,7 @@ control = dict(
     s_s_test_datatype='Segmentation',
 
     s_gtcls='use',
-    s_seedthres=20,
+    s_seedthres=50,
     s_salthres=50,
     # s_guiderule='G0',
     # s_guiderule='G1',
@@ -72,7 +72,7 @@ control = dict(
     test_iter=8000,
     test_dataset='voc12val',
     test_datatype='Segmentation',
-    test_pcrf='deeplab',
+    test_pcrf='none',
 )
 
 
@@ -208,8 +208,16 @@ def run_test(net, out_dir, control, conf):
         [1, 3, conf['input_size'], conf['input_size']],
         mean_image=np.load(conf['imagenetmeanloc']).mean(1).mean(1))
 
-    pred_list = []
-    id_list = []
+    confcounts = np.zeros((conf['nclass'], conf['nclass']), dtype=np.int)
+
+    def compute_hist(confcounts, im_id, seg):
+        gtfile = conf['clsimgpath'] % (im_id)
+        gt = np.array(Image.open(gtfile)).astype(np.float)
+        locs = gt < 255
+        sumim = gt + seg.astype(np.float) * (conf['nclass'])
+        hs = np.histogram(sumim[locs], bins=range(conf['nclass'] ** 2 + 1))[0]
+        confcounts += hs.reshape((conf['nclass'], conf['nclass']))
+        return
 
     start_time = time.time()
     for idx in range(num_test):
@@ -225,11 +233,10 @@ def run_test(net, out_dir, control, conf):
         if conf['save']:
             if not conf['overridecache']:
                 if osp.isfile(outfile):
+                    seg = cv2.imread(outfile)[:, :, 0]
+                    compute_hist(confcounts, im_id, seg)
                     print('skipping')
                     continue
-
-        gtfile = conf['clsimgpath'] % (im_id)
-        gt = np.array(Image.open(gtfile)).astype(np.float)
 
         imloc = os.path.join(conf['pascalroot'], 'VOC' + year, 'JPEGImages', im_id + '.jpg')
         image = load_image_PIL(imloc)
@@ -252,6 +259,8 @@ def run_test(net, out_dir, control, conf):
             seg = seg_raw.copy().astype(np.uint8)
 
         if conf['vis']:
+            gtfile = conf['clsimgpath'] % (im_id)
+            gt = np.array(Image.open(gtfile)).astype(np.float)
 
             def visualise_data():
                 fig = plt.figure(0, figsize=(15, 10))
@@ -294,6 +303,22 @@ def run_test(net, out_dir, control, conf):
                     print('WARNING: OVERRIDING EXISTING RESULT FILE')
             cv2.imwrite(outfile, seg)
             print('results saved to %s' % outfile)
+
+        compute_hist(confcounts, im_id, seg)
+
+    return confcounts
+
+
+def report_eval(confcounts, conf):
+    accuracies = np.zeros(conf['nclass'])
+    for j in range(conf['nclass']):
+        gtj = confcounts[:, j].sum()
+        resj = confcounts[j, :].sum()
+        gtjresj = confcounts[j, j]
+        accuracies[j] = 100 * gtjresj / (gtj + resj - gtjresj)
+        print('  %14s: %6.1f' % (get_pascal_classes_bg()[j], accuracies[j]))
+    avacc = accuracies.mean()
+    print('Average accuracy: %6.3f' % avacc)
     return
 
 
@@ -306,7 +331,8 @@ def main(control, conf):
 
     net = setup_net(control, control_model, control_token, conf)
 
-    run_test(net, out_dir, control, conf)
+    confcounts = run_test(net, out_dir, control, conf)
+    report_eval(confcounts, conf)
     return
 
 

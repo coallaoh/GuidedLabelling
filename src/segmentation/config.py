@@ -194,6 +194,7 @@ def config_test(control, conf, EXP_PHASE):
     conf['output_size'] = 41
     if 'voc' in control['dataset']:
         conf['nposcls'] = 20
+        conf['nclass'] = 21
     else:
         raise NotImplementedError
 
