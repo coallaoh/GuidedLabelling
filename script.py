@@ -11,7 +11,7 @@ from imports.basic_modules import *
 from imports.ResearchTools import *
 
 # Pipeline of the algorithm
-TRAIN_SEED = False
+TRAIN_SEED = True
 TEST_SEED = True
 LOAD_SALIENCY = True
 GENERATE_GUIDE = True
