@@ -24,7 +24,7 @@ conf = dict(
     save_cls=True,
     save_heat=True,
     vis=False,
-    visconf=0.5,
+    visconf=0.2,
     shuffle=True,
     overridecache=True,
     pascalroot="/BS/joon_projects/work/",
@@ -184,10 +184,13 @@ def run_test(net, out_dir, control, conf):
         image = load_image_PIL(imloc)
         imshape_original = image.shape[:2]
 
-        net.blobs['data'].data[...][0] = preprocess_convnet_image(image, transformer, 321, 'test')
+        net.blobs['data'].data[...][0], confs_process = preprocess_convnet_image(image, transformer, 321, 'test',
+                                                                                 return_deprocess_confs=True)
         net.forward()
 
         heat_maps = compute_out_heat(net, gt_cls_nobg, conf)
+        heat_maps = deprocess_convnet_label(heat_maps, confs_process)
+
         cls_preds = net.blobs['score'].data[0, :]
 
         pred_list.append(cls_preds.copy())

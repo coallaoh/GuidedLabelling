@@ -22,7 +22,7 @@ EXP_PHASE = 'seg-test'
 
 conf = dict(
     save=True,
-    vis=True,
+    vis=False,
     shuffle=True,
     overridecache=True,
     pascalroot="/BS/joon_projects/work/",
@@ -60,7 +60,7 @@ control = dict(
     s_s_test_datatype='Segmentation',
 
     s_gtcls='use',
-    s_seedthres=50,
+    s_seedthres=20,
     s_salthres=50,
     # s_guiderule='G0',
     # s_guiderule='G1',
@@ -72,7 +72,7 @@ control = dict(
     test_iter=8000,
     test_dataset='voc12val',
     test_datatype='Segmentation',
-    test_pcrf='deeplab',
+    test_pcrf='none',
 )
 
 

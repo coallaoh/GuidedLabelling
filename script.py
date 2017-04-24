@@ -11,7 +11,7 @@ from imports.basic_modules import *
 from imports.ResearchTools import *
 
 # Pipeline of the algorithm
-TRAIN_SEED = True
+TRAIN_SEED = False
 TEST_SEED = True
 LOAD_SALIENCY = True
 GENERATE_GUIDE = True
@@ -21,7 +21,10 @@ TEST_SEG = True
 # Common options
 VISUALISE = False
 SAVE_CACHE = True
-GPU = 0
+GPU = 1
+
+SEED_TYPE = 'GAP-HighRes'
+SEED_THRES = 20
 
 if TRAIN_SEED:
     print("##########\nSeed Training\n##########")
@@ -38,7 +41,7 @@ if TRAIN_SEED:
 
     control = dict(
         init='VGG_ILSVRC_16_layers',
-        net='GAP-HighRes',
+        net=SEED_TYPE,
         dataset='voc12train_aug',
         datatype='Segmentation',
         base_lr=0.001,
@@ -66,7 +69,7 @@ if TEST_SEED:
 
     control = dict(
         init='VGG_ILSVRC_16_layers',
-        net='GAP-HighRes',
+        net=SEED_TYPE,
         dataset='voc12train_aug',
         datatype='Segmentation',
         base_lr=0.001,
@@ -105,7 +108,7 @@ if GENERATE_GUIDE:
     control = dict(
         # seed
         g_init='VGG_ILSVRC_16_layers',
-        g_net='GAP-HighRes',
+        g_net=SEED_TYPE,
         g_dataset='voc12train_aug',
         g_datatype='Segmentation',
         g_base_lr=0.001,
@@ -125,7 +128,7 @@ if GENERATE_GUIDE:
         s_test_datatype='Segmentation',
 
         gtcls='use',
-        seedthres=20,
+        seedthres=SEED_THRES,
         salthres=50,
         guiderule='G2',
         test_dataset='voc12train_aug',
@@ -157,7 +160,7 @@ if TRAIN_SEG:
 
         # seed
         s_g_init='VGG_ILSVRC_16_layers',
-        s_g_net='GAP-HighRes',
+        s_g_net=SEED_TYPE,
         s_g_dataset='voc12train_aug',
         s_g_datatype='Segmentation',
         s_g_base_lr=0.001,
@@ -177,7 +180,7 @@ if TRAIN_SEG:
         s_s_test_datatype='Segmentation',
 
         s_gtcls='use',
-        s_seedthres=20,
+        s_seedthres=SEED_THRES,
         s_salthres=50,
         s_guiderule='G2',
         s_test_dataset='voc12train_aug',
@@ -210,7 +213,7 @@ if TEST_SEG:
 
         # seed
         s_g_init='VGG_ILSVRC_16_layers',
-        s_g_net='GAP-HighRes',
+        s_g_net=SEED_TYPE,
         s_g_dataset='voc12train_aug',
         s_g_datatype='Segmentation',
         s_g_base_lr=0.001,
@@ -230,7 +233,7 @@ if TEST_SEG:
         s_s_test_datatype='Segmentation',
 
         s_gtcls='use',
-        s_seedthres=20,
+        s_seedthres=SEED_THRES,
         s_salthres=50,
         s_guiderule='G2',
         s_test_dataset='voc12train_aug',
