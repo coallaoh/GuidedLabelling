@@ -423,7 +423,13 @@ def print_results(conf):
     fgprec = prec[:, 1:].mean(1)
     bgrec = rec[:, 0]
     bgprec = prec[:, 0]
-    print(0.5 * (fgprec[fgrec > 0.2][-1] + bgprec[bgrec > 0.8][-1]))
+    sv = np.argsort(fgrec)
+    fgrec = fgrec[sv]
+    fgprec = fgprec[sv]
+    sv = np.argsort(bgrec)
+    bgrec = bgrec[sv]
+    bgprec = bgprec[sv]
+    print(0.5 * (fgprec[fgrec > 0.2][0] + bgprec[bgrec > 0.8][0]))
 
     plot(conf)
     return
