@@ -106,7 +106,7 @@ class BatchLoader_PASCAL(object):
                         NO_MORE = True
                         break
                     SEEN_CLS = False
-                    id_choice = np.random.choice(list_inst_cls, 1)
+                    id_choice = np.random.choice(list_inst_cls, 1)[0]
                     all_cls = labellist[id_choice]
                     for cls in all_cls:
                         if cls not in cls_list:
@@ -165,7 +165,7 @@ class BatchLoader_PASCAL(object):
         gt_cls = np.unique(gt)
         gt_cls_nobg = gt_cls[(gt_cls != 0) & (gt_cls != 255)]
         for cls in gt_cls_nobg:  # anns['gt_classes'] is 0 for bg, 1~20 for fg categories
-            multilabel[cls - 1] = 1
+            multilabel[int(cls) - 1] = 1
 
         self._cur += 1
         return im, multilabel
