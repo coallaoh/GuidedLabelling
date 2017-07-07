@@ -44,6 +44,7 @@ control = dict(
     test_dataset='voc12train_aug',
     test_datatype='Segmentation',
     test_ranking='none',
+    test_interpord=1,
     test_gtcls='use',
 )
 
@@ -74,6 +75,8 @@ def parse_input(argv=sys.argv):
                         help='Type of test data')
     parser.add_argument('--test_ranking', default='none', type=str,
                         help='When testing, dont rank priority according to size @ 20 percent max score as in lamperts')
+    parser.add_argument('--test_interpord', default=1, type=int,
+                        help='Interpolation order')
     parser.add_argument('--test_gtcls', default='use', type=str,
                         help='Use GT class information at test time')
     control = vars(parser.parse_known_args(argv)[0])
@@ -136,7 +139,7 @@ def compute_out_heat(net, gt_cls, conf):
 
     heat_maps = np.zeros((len(gt_cls), osz, osz))
     for idx, cls in enumerate(gt_cls):
-        i = cls - 1
+        i = int(cls - 1)
         w = params[i]
         heat_maps[idx, :, :] = np.sum(CAM_scores * w[:, None, None], axis=0)
 
@@ -184,14 +187,15 @@ def run_test(net, out_dir, control, conf):
         image = load_image_PIL(imloc)
         imshape_original = image.shape[:2]
 
-        net.blobs['data'].data[...][0], confs_process = preprocess_convnet_image(image, transformer, 321, 'test',
-                                                                                 return_deprocess_confs=True)
+        net.blobs[conf['inputname']].data[...][0], confs_process = preprocess_convnet_image(image, transformer, 321,
+                                                                                            'test',
+                                                                                            return_deprocess_confs=True)
         net.forward()
 
         heat_maps = compute_out_heat(net, gt_cls_nobg, conf)
-        heat_maps = deprocess_convnet_label(heat_maps, confs_process)
+        heat_maps = deprocess_convnet_label(heat_maps, confs_process, order=control['test_interpord'])
 
-        cls_preds = net.blobs['score'].data[0, :]
+        cls_preds = net.blobs[conf['outputname']].data[0, :]
 
         pred_list.append(cls_preds.copy())
         id_list.append(im_id)

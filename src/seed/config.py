@@ -63,6 +63,7 @@ def config_test(control, conf, EXP_PHASE):
         test_iter=8000,
         test_datatype='Segmentation',
         test_ranking='none',
+        test_interpord=1,
         test_gtcls='use',
     )
 
@@ -80,6 +81,7 @@ def config_test(control, conf, EXP_PHASE):
         'test_dataset',
         'test_datatype',
         'test_ranking',
+        'test_interpord',
         'test_gtcls',
     ]
 
@@ -111,10 +113,14 @@ def config_test(control, conf, EXP_PHASE):
         conf['out_size'] = 21
         conf['blobname_map'] = 'relu6_gap'
         conf['paramname_weight'] = 'score'
+        conf['inputname'] = 'data'
+        conf['outputname'] = 'score'
     elif control['net'] == 'GAP-HighRes':
         conf['out_size'] = 41
         conf['blobname_map'] = 'relu7_gap'
         conf['paramname_weight'] = 'score'
+        conf['inputname'] = 'data'
+        conf['outputname'] = 'score'
     elif control['net'] == 'GAP-ROI':
         conf['out_size'] = 41
         raise NotImplementedError
@@ -122,6 +128,8 @@ def config_test(control, conf, EXP_PHASE):
         conf['out_size'] = 41
         conf['blobname_map'] = 'relu7'
         conf['paramname_weight'] = 'score'
+        conf['inputname'] = 'data'
+        conf['outputname'] = 'score'
     else:
         raise NotImplementedError
 
