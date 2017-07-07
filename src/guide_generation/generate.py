@@ -43,6 +43,7 @@ control = dict(
     g_test_dataset='voc12train_aug',
     g_test_datatype='Segmentation',
     g_test_ranking='none',
+    g_test_interpord=1,
     g_test_gtcls='use',
 
     # SAL
@@ -91,6 +92,8 @@ def parse_input(argv=sys.argv):
                         help='Type of test data')
     parser.add_argument('--g_test_ranking', default='none', type=str,
                         help='When testing, dont rank priority according to size @ 20 percent max score as in lamperts')
+    parser.add_argument('--g_test_interpord', default=1, type=int,
+                        help='interpolation order')
     parser.add_argument('--g_test_gtcls', default='use', type=str,
                         help='Use GT class information at test time')
 
@@ -223,7 +226,7 @@ def combine_gap_sal(image_original, seed, saliency, gt_cls, control):
             for idx, gc in enumerate(gap_cls_cc[gtc]):
                 if gap_cls_cc_usage[gtc][idx]:
                     if gtc == 0:
-                        seg[np.maximum(0, gc - (gc & saliency)).astype(np.bool)] = 0
+                        seg[np.maximum(0, gc.astype(np.int) - (gc & saliency).astype(np.int)).astype(np.bool).astype(np.int)] = 0
 
                 else:
                     seg[gc] = gtc

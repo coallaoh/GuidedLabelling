@@ -49,6 +49,7 @@ control = dict(
     s_g_test_dataset='voc12train_aug',
     s_g_test_datatype='Segmentation',
     s_g_test_ranking='none',
+    s_g_test_interpord=1,
     s_g_test_gtcls='use',
 
     # SAL
@@ -109,6 +110,8 @@ def parse_input(argv=sys.argv):
                         help='Type of test data')
     parser.add_argument('--s_g_test_ranking', default='none', type=str,
                         help='When testing, dont rank priority according to size @ 20 percent max score as in lamperts')
+    parser.add_argument('--s_g_test_interpord', default=1, type=int,
+                        help='Interpolation order')
     parser.add_argument('--s_g_test_gtcls', default='use', type=str,
                         help='Use GT class information at test time')
 

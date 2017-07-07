@@ -40,6 +40,7 @@ def config_generate(control, conf, EXP_PHASE):
         g_test_dataset='voc12train_aug',
         g_test_datatype='Segmentation',
         g_test_ranking='none',
+        g_test_interpord=1,
         g_test_gtcls='use',
 
         # SAL

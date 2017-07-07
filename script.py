@@ -19,6 +19,7 @@ TRAIN_SEG = True
 TEST_SEG = True
 
 # Common options
+PASCALROOT = "/BS/joon_projects/work/"
 VISUALISE = False
 SAVE_CACHE = True
 GPU = 1
@@ -34,7 +35,7 @@ if TRAIN_SEED:
         vis=VISUALISE,
         save=SAVE_CACHE,
         overridecache=True,
-        pascalroot="/BS/joon_projects/work/",
+        pascalroot=PASCALROOT,
         imagenetmeanloc="data/ilsvrc_2012_mean.npy",
         gpu=GPU,
     )
@@ -62,7 +63,7 @@ if TEST_SEED:
         visconf=0.5,
         shuffle=True,
         overridecache=True,
-        pascalroot="/BS/joon_projects/work/",
+        pascalroot=PASCALROOT,
         imagenetmeanloc="data/ilsvrc_2012_mean.npy",
         gpu=GPU,
     )
@@ -79,6 +80,7 @@ if TEST_SEED:
         test_dataset='voc12train_aug',
         test_datatype='Segmentation',
         test_ranking='none',
+        test_interpord=1,
         test_gtcls='use',
     )
     seed_test(control, conf)
@@ -99,7 +101,7 @@ if GENERATE_GUIDE:
         save=SAVE_CACHE,
         shuffle=True,
         overridecache=True,
-        pascalroot="/BS/joon_projects/work",
+        pascalroot=PASCALROOT,
         gpu=GPU,
         n=0,
         N=1,
@@ -118,6 +120,7 @@ if GENERATE_GUIDE:
         g_test_dataset='voc12train_aug',
         g_test_datatype='Segmentation',
         g_test_ranking='none',
+        g_test_interpord=1,
         g_test_gtcls='use',
 
         # SAL
@@ -145,7 +148,7 @@ if TRAIN_SEG:
         vis=VISUALISE,
         save=SAVE_CACHE,
         overridecache=True,
-        pascalroot="/BS/joon_projects/work/",
+        pascalroot=PASCALROOT,
         imagenetmeanloc="data/ilsvrc_2012_mean.npy",
         gpu=GPU,
     )
@@ -170,6 +173,7 @@ if TRAIN_SEG:
         s_g_test_dataset='voc12train_aug',
         s_g_test_datatype='Segmentation',
         s_g_test_ranking='none',
+        s_g_test_interpord=1,
         s_g_test_gtcls='use',
 
         # SAL
@@ -198,7 +202,7 @@ if TEST_SEG:
         vis=VISUALISE,
         shuffle=True,
         overridecache=True,
-        pascalroot="/BS/joon_projects/work/",
+        pascalroot=PASCALROOT,
         imagenetmeanloc="data/ilsvrc_2012_mean.npy",
         gpu=GPU,
     )
@@ -223,6 +227,7 @@ if TEST_SEG:
         s_g_test_dataset='voc12train_aug',
         s_g_test_datatype='Segmentation',
         s_g_test_ranking='none',
+        s_g_test_interpord=1,
         s_g_test_gtcls='use',
 
         # SAL

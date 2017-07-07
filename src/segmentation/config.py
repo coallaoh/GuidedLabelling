@@ -46,6 +46,7 @@ def config_train(control, conf, EXP_PHASE):
         s_g_test_dataset='voc12train_aug',
         s_g_test_datatype='Segmentation',
         s_g_test_ranking='none',
+        s_g_test_interpord=1,
         s_g_test_gtcls='use',
 
         # SAL
@@ -112,6 +113,7 @@ def config_test(control, conf, EXP_PHASE):
         s_g_test_dataset='voc12train_aug',
         s_g_test_datatype='Segmentation',
         s_g_test_ranking='none',
+        s_g_test_interpord=1,
         s_g_test_gtcls='use',
 
         # SAL
@@ -151,6 +153,7 @@ def config_test(control, conf, EXP_PHASE):
         s_g_test_dataset='voc12train_aug',
         s_g_test_datatype='Segmentation',
         s_g_test_ranking='none',
+        s_g_test_interpord=1,
         s_g_test_gtcls='use',
 
         # SAL

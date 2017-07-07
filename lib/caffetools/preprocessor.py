@@ -88,17 +88,17 @@ def preprocess_convnet_image(im, transformer, input_size, phase, return_deproces
         return im
 
 
-def deprocess_convnet_label(label, confs):
+def deprocess_convnet_label(label, confs, order=1):
     label_outshape = label.shape[1]
     label = nd.zoom(label,
                     [1, float(confs['input_size']) / label_outshape, float(confs['input_size']) / label_outshape],
-                    order=1)
+                    order=order)
 
     label = label[:, confs['margin'][0]: (confs['imshape'][0] + confs['margin'][0]),
             confs['margin'][1]:(confs['imshape'][1] + confs['margin'][1])]
 
     label = nd.zoom(label, [1, float(confs['im_original_shape'][0]) / confs['imshape'][0],
-                            float(confs['im_original_shape'][1]) / confs['imshape'][1]], order=1)
+                            float(confs['im_original_shape'][1]) / confs['imshape'][1]], order=order)
 
     return label
 
