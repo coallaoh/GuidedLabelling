@@ -59,7 +59,7 @@ def deprocess_net_image(image, subtract_mean=True):
     return image
 
 
-def preprocess_convnet_image(im, transformer, input_size, phase, return_deprocess_confs=False):
+def preprocess_convnet_image(im, transformer, input_size, phase, no_resize=False, return_deprocess_confs=False):
     if phase == 'train':
         im = random_crop(im)
     elif phase == 'test':
@@ -68,7 +68,8 @@ def preprocess_convnet_image(im, transformer, input_size, phase, return_deproces
         raise NotImplementedError
 
     imshape_postcrop = im.shape[:2]
-    im = scipy.misc.imresize(im, input_size / float(max(imshape_postcrop)))
+    if not no_resize:
+        im = scipy.misc.imresize(im, input_size / float(max(imshape_postcrop)))
 
     imshape = im.shape[:2]
     margin = [(input_size - imshape[0]) // 2, (input_size - imshape[1]) // 2]

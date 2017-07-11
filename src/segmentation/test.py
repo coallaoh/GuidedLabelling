@@ -313,6 +313,7 @@ def run_test(net, out_dir, control, conf):
 
 
 def report_eval(confcounts, conf):
+    confcounts = confcounts.astype(np.float)
     accuracies = np.zeros(conf['nclass'])
     for j in range(conf['nclass']):
         gtj = confcounts[:, j].sum()
