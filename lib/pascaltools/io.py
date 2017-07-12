@@ -26,7 +26,7 @@ def load_pascal_conf(control, conf):
     return
 
 
-def get_pascal_indexlist(root, year, type, split, shuffle=False, n=0, N=1):
+def get_pascal_indexlist(root, year, type, split, shuffle=False, n=0, N=1, seed=132):
     pascal_list_file = osp.join(root, 'VOC' + year, 'ImageSets', type,
                                 'list', split + '.txt')
     pascal_tmp_list = [line.rstrip('\n') for line in open(pascal_list_file)]
@@ -37,7 +37,7 @@ def get_pascal_indexlist(root, year, type, split, shuffle=False, n=0, N=1):
     indexlist = np.array(indexlist)
 
     if shuffle:
-        random.seed(132)
+        random.seed(seed)
         random.shuffle(indexlist)
 
     if N > 1:

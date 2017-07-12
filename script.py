@@ -160,6 +160,7 @@ if TRAIN_SEG:
         datatype='Segmentation',
         base_lr=0.001,
         batch_size=15,
+        resize='none',
 
         # seed
         s_g_init='VGG_ILSVRC_16_layers',
@@ -214,6 +215,7 @@ if TEST_SEG:
         datatype='Segmentation',
         base_lr=0.001,
         batch_size=15,
+        resize='none',
 
         # seed
         s_g_init='VGG_ILSVRC_16_layers',
@@ -248,6 +250,7 @@ if TEST_SEG:
         test_dataset='voc12val',
         test_datatype='Segmentation',
         test_pcrf='deeplab',
+        test_resize='none',
     )
 
     seg_test(control, conf)

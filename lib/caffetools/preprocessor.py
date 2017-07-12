@@ -104,33 +104,78 @@ def deprocess_convnet_label(label, confs, order=1):
     return label
 
 
-def preprocess_convnet_image_label(im, label, transformer, input_size, phase):
-    if phase == 'train':
-        im, coords = random_crop(im, return_coords=True)
-        label = label[coords['x0']:coords['x1'], coords['y0']:coords['y1']]
-    elif phase == 'test':
-        pass
+def preprocess_convnet_image_label(im, label, transformer, input_size, phase, resize):
+    if resize == 'tight':
+        if phase == 'train':
+            im, coords = random_crop(im, return_coords=True)
+            label = label[coords['x0']:coords['x1'], coords['y0']:coords['y1']]
+        elif phase == 'test':
+            pass
+        else:
+            raise NotImplementedError
+        imshape_postcrop = im.shape[:2]
+
+        im = scipy.misc.imresize(im, input_size / float(max(imshape_postcrop)))
+        label = scipy.misc.imresize(label, input_size / float(max(imshape_postcrop)), interp='nearest', mode='F')
+
+        imshape = im.shape[:2]
+        margin = [(input_size - imshape[0]) // 2, (input_size - imshape[1]) // 2]
+        im = cv2.copyMakeBorder(im, margin[0], input_size - imshape[0] - margin[0],
+                                margin[1], input_size - imshape[1] - margin[1],
+                                cv2.BORDER_REFLECT_101)
+        label = cv2.copyMakeBorder(label, margin[0], input_size - imshape[0] - margin[0],
+                                   margin[1], input_size - imshape[1] - margin[1],
+                                   cv2.BORDER_REFLECT_101)
+        assert (im.shape[0] == im.shape[1] == input_size)
+
+        if phase == 'train':
+            flip = np.random.choice(2) * 2 - 1
+            im = im[:, ::flip, :]
+            label = label[:, ::flip]
+
+    elif resize == 'none':
+        if phase == 'train':
+            # do a simple horizontal flip as data augmentation
+            flip = np.random.choice(2) * 2 - 1
+            im = im[:, ::flip, :]
+            label = label[:, ::flip]
+        elif phase == 'test':
+            pass
+        else:
+            raise NotImplementedError
+
+        offset, margin = get_offset(im.shape[:2], crop_size=input_size)
+        margins = [
+            margin[0] // 2,
+            margin[0] - margin[0] // 2,
+            margin[1] // 2,
+            margin[1] - margin[1] // 2,
+        ]
+
+        im = im[offset[0]:offset[0] + input_size - margin[0], offset[1]:offset[1] + input_size - margin[1], :]
+        im = cv2.copyMakeBorder(im, margins[0], margins[1], margins[2], margins[3], cv2.BORDER_REFLECT_101)
+        assert (im.shape[0] == im.shape[1] == input_size)
+
+        label = label[offset[0]:offset[0] + input_size - margin[0], offset[1]:offset[1] + input_size - margin[1]]
+        label = cv2.copyMakeBorder(label, margins[0], margins[1], margins[2], margins[3], cv2.BORDER_REFLECT_101)
+        assert (label.shape[0] == label.shape[1] == input_size)
     else:
         raise NotImplementedError
 
-    imshape_postcrop = im.shape[:2]
-    im = scipy.misc.imresize(im, input_size / float(max(imshape_postcrop)))
-    label = scipy.misc.imresize(label, input_size / float(max(imshape_postcrop)), interp='nearest', mode='F')
-
-    imshape = im.shape[:2]
-    margin = [(input_size - imshape[0]) // 2, (input_size - imshape[1]) // 2]
-    im = cv2.copyMakeBorder(im, margin[0], input_size - imshape[0] - margin[0],
-                            margin[1], input_size - imshape[1] - margin[1],
-                            cv2.BORDER_REFLECT_101)
-    label = cv2.copyMakeBorder(label, margin[0], input_size - imshape[0] - margin[0],
-                               margin[1], input_size - imshape[1] - margin[1],
-                               cv2.BORDER_REFLECT_101)
-    assert (im.shape[0] == im.shape[1] == input_size)
-
-    if phase == 'train':
-        flip = np.random.choice(2) * 2 - 1
-        im = im[:, ::flip, :]
-        label = label[:, ::flip]
-
     im = transformer.preprocess('data', im)
     return im, label
+
+
+def get_offset(original_size, crop_size):
+    offset_x_max = max(original_size[0] - crop_size, 0)
+    offset_y_max = max(original_size[1] - crop_size, 0)
+
+    offset = [
+        random.randint(0, offset_x_max),
+        random.randint(0, offset_y_max),
+    ]
+    margin = [
+        max(crop_size - original_size[0], 0),
+        max(crop_size - original_size[1], 0),
+    ]
+    return offset, margin

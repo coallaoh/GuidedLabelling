@@ -247,7 +247,8 @@ class BatchLoader_PASCAL_Labelling(object):
         label = load_image_PIL(label_file_name)
 
         # Process
-        im, label = preprocess_convnet_image_label(im, label, self.transformer, self.conf['input_size'], 'train')
+        im, label = preprocess_convnet_image_label(im, label, self.transformer, self.conf['input_size'], 'train',
+                                                   self.control['resize'])
         label = scipy.misc.imresize(label, [self.conf['output_size'], self.conf['output_size']], interp='nearest',
                                     mode='F').astype(np.float32)
 

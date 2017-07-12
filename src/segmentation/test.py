@@ -37,6 +37,7 @@ control = dict(
     datatype='Segmentation',
     base_lr=0.001,
     batch_size=15,
+    resize='tight',
 
     # seed
     s_g_init='VGG_ILSVRC_16_layers',
@@ -74,6 +75,7 @@ control = dict(
     test_dataset='voc12val',
     test_datatype='Segmentation',
     test_pcrf='none',
+    test_resize='none',
 )
 
 
@@ -87,6 +89,8 @@ def parse_input(argv=sys.argv):
                         help='Test set')
     parser.add_argument('--test_datatype', default='Segmentation', type=str,
                         help='Type of test set')
+    parser.add_argument('--test_resize', default='tight', type=str,
+                        help='Resizing the input image before feeding into convnet')
 
     parser.add_argument('--init', default='VGG_ILSVRC_16_layers-deeplab', type=str,
                         help='Initialisation for the network')
@@ -100,6 +104,8 @@ def parse_input(argv=sys.argv):
                         help='Base learning rate')
     parser.add_argument('--batch_size', default=15, type=int,
                         help='Batch size')
+    parser.add_argument('--resize', default='tight', type=str,
+                        help='Resizing the input image before feeding into convnet')
 
     parser.add_argument('--s_g_init', default='VGG_ILSVRC_16_layers', type=str,
                         help='Initialisation for the network')
@@ -245,8 +251,15 @@ def run_test(net, out_dir, control, conf):
         image = load_image_PIL(imloc)
         imshape_original = image.shape[:2]
 
-        net.blobs['data'].data[...][0], confs_process = preprocess_convnet_image(image, transformer, 321, 'test',
-                                                                                 return_deprocess_confs=True)
+        if control['test_resize'] == 'tight':
+            net.blobs['data'].data[...][0], confs_process = preprocess_convnet_image(image, transformer, 321, 'test',
+                                                                                     return_deprocess_confs=True)
+        elif control['test_resize'] == 'none':
+            net.blobs['data'].data[...][0], confs_process = preprocess_convnet_image(image, transformer, 531, 'test',
+                                                                                     return_deprocess_confs=True,
+                                                                                     no_resize=True)
+        else:
+            raise NotImplementedError
         net.forward()
 
         scoremap = net.blobs['fc8_voc12'].data[0]

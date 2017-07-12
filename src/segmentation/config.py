@@ -34,6 +34,7 @@ def config_train(control, conf, EXP_PHASE):
         datatype='Segmentation',
         base_lr=0.001,
         batch_size=15,
+        resize='tight',
 
         # seed
         s_g_init='VGG_ILSVRC_16_layers',
@@ -101,6 +102,7 @@ def config_test(control, conf, EXP_PHASE):
         datatype='Segmentation',
         base_lr=0.001,
         batch_size=15,
+        resize='tight',
 
         # seed
         s_g_init='VGG_ILSVRC_16_layers',
@@ -132,6 +134,7 @@ def config_test(control, conf, EXP_PHASE):
         test_iter=8000,
         test_datatype='Segmentation',
         test_pcrf='none',
+        test_resize='tight',
     )
 
     defaults_model = dict(
@@ -141,6 +144,7 @@ def config_test(control, conf, EXP_PHASE):
         datatype='Segmentation',
         base_lr=0.001,
         batch_size=15,
+        resize='tight',
 
         # seed
         s_g_init='VGG_ILSVRC_16_layers',
@@ -175,6 +179,7 @@ def config_test(control, conf, EXP_PHASE):
         'test_dataset',
         'test_datatype',
         'test_pcrf',
+        'test_resize',
     ]
 
     control_model = control.copy()

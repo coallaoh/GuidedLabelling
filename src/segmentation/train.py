@@ -26,7 +26,7 @@ conf = dict(
     overridecache=True,
     pascalroot="/BS/joon_projects/work/",
     imagenetmeanloc="data/ilsvrc_2012_mean.npy",
-    gpu=3,
+    gpu=0,
 )
 
 control = dict(
@@ -36,6 +36,7 @@ control = dict(
     datatype='Segmentation',
     base_lr=0.001,
     batch_size=15,
+    resize='none',
 
     # seed
     s_g_init='VGG_ILSVRC_16_layers',
@@ -87,6 +88,8 @@ def parse_input(argv=sys.argv):
                         help='Base learning rate')
     parser.add_argument('--batch_size', default=15, type=int,
                         help='Batch size')
+    parser.add_argument('--resize', default='tight', type=str,
+                        help='Resizing the input image before feeding into convnet')
 
     parser.add_argument('--s_g_init', default='VGG_ILSVRC_16_layers', type=str,
                         help='Initialisation for the network')
