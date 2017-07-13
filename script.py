@@ -88,9 +88,9 @@ if TEST_SEED:
 if LOAD_SALIENCY:
     print("##########\nCopying Saliency Output\n##########")
 
-    mkdir_if_missing("data/saliency-test/_test_dataset:voc12train_aug")
+    mkdir_if_missing("cache/saliency-test/_test_dataset:voc12train_aug")
     os.system(
-        "tar xf data/saliency-test/test_dataset:voc12train_aug.tar.gz -C cache/saliency-test/_test_dataset:voc12train_aug/")
+        "tar xf data/saliency-test/test_dataset:voc12train_aug.tar.gz -C cache/saliency-test/_test_dataset:voc12train_aug/ --force-local")
 
 if GENERATE_GUIDE:
     print("##########\nGenerating Guide\n##########")
