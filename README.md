@@ -72,7 +72,7 @@ The following script does
 $ ./script.py
 ```
 
-Please read the script for greater details.
+Before running, please change the variable `PASCALROOT` to indicate the root directory for your [Pascal VOC](http://host.robots.ox.ac.uk:8080/pascal/VOC/) database, and set the variable `GPU` to the gpu device number of your choice. Please read the script for greater details.
  
 #### For keen people
 
