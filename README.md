@@ -1,4 +1,9 @@
-# GuidedLabelling
+# GuidedLabelling, CVPR'17
+
+#### Seong Joon Oh, Rodrigo Benenson, Anna Khoreva, Zeynep Akata, Mario Fritz, Bernt Schiele.
+
+#### Max-Planck Institute for Informatics.
+
 [Exploiting Saliency for Object Segmentation from Image Level Labels](https://arxiv.org/abs/1701.08261), CVPR'17
 
 ![TEASER](http://datasets.d2.mpi-inf.mpg.de/joon17cvpr/teaser.jpg)
