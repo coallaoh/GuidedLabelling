@@ -152,6 +152,7 @@ def config_eval(control, conf, EXP_PHASE):
         test_iter=8000,
         test_datatype='Segmentation',
         test_ranking='none',
+        test_interpord=1,
         test_gtcls='use',
     )
 
@@ -200,6 +201,7 @@ def config_eval_cls(control, conf, EXP_PHASE):
         test_iter=8000,
         test_datatype='Segmentation',
         test_ranking='none',
+        test_interpord=1,
         test_gtcls='use',
     )
 

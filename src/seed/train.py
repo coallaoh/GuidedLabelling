@@ -31,7 +31,7 @@ conf = dict(
 
 control = dict(
     init='VGG_ILSVRC_16_layers',
-    net='GAP-DeepLab',
+    net='GAP-HighRes',
     dataset='voc12train_aug',
     datatype='Segmentation',
     base_lr=0.001,

@@ -28,7 +28,7 @@ conf = dict(
 
 control = dict(
     init='VGG_ILSVRC_16_layers',
-    net='GAP-LowRes',
+    net='GAP-HighRes',
     dataset='voc12train_aug',
     datatype='Segmentation',
     base_lr=0.001,
@@ -38,6 +38,7 @@ control = dict(
     test_dataset='voc12val',
     test_datatype='Segmentation',
     test_ranking='none',
+    test_interpord=1,
     test_gtcls='use',
 )
 
@@ -68,6 +69,8 @@ def parse_input(argv=sys.argv):
                         help='Type of test data')
     parser.add_argument('--test_ranking', default='none', type=str,
                         help='When testing, dont rank priority according to size @ 20 percent max score as in lamperts')
+    parser.add_argument('--test_interpord', default=1, type=int,
+                        help='Interpolation order')
     parser.add_argument('--test_gtcls', default='use', type=str,
                         help='Use GT class information at test time')
     control = vars(parser.parse_known_args(argv)[0])
