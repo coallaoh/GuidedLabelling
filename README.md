@@ -41,6 +41,8 @@ Install Python requirements.
 $ pip install -r ./pip-requirements
 ```
 
+Install OpenCV for python, following the instructions in: http://opencv.org.
+
 Install PyDenseCRF (https://github.com/lucasb-eyer/pydensecrf).
 
 ```bash
