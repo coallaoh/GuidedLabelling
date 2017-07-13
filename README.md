@@ -38,7 +38,7 @@ $ ./downloads.sh
 Install Python requirements.
 
 ```bash
-$ pip install -r ./pip-requirements
+$ pip install numpy && pip install -r ./pip-requirements
 ```
 
 Install OpenCV for python, following the instructions in: http://opencv.org.
@@ -83,6 +83,10 @@ $ ./src/seed/train.py -h
 ```
 
 to see options for playing with experimental parameters.
+
+## Contact
+
+For any problem with implementation or bug, please contact [Seong Joon Oh](https://www.mpi-inf.mpg.de/departments/computer-vision-and-multimodal-computing/people/seong-joon-oh/) (joon at mpi-inf dot mpg dot de).
 
 ## Citation
 
