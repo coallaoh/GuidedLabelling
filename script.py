@@ -11,8 +11,8 @@ from imports.basic_modules import *
 from imports.ResearchTools import *
 
 # Pipeline of the algorithm
-TRAIN_SEED = True
-TEST_SEED = True
+TRAIN_SEED = False
+TEST_SEED = False
 LOAD_SALIENCY = True
 GENERATE_GUIDE = True
 TRAIN_SEG = True
@@ -91,6 +91,8 @@ if LOAD_SALIENCY:
     mkdir_if_missing("cache/saliency-test/_test_dataset:voc12train_aug")
     os.system(
         "tar xf data/saliency-test/test_dataset:voc12train_aug.tar.gz -C cache/saliency-test/_test_dataset:voc12train_aug/ --force-local")
+    os.system(
+        "mv cache/saliency-test/_test_dataset:voc12train_aug/tmp/* cache/saliency-test/_test_dataset:voc12train_aug/")
 
 if GENERATE_GUIDE:
     print("##########\nGenerating Guide\n##########")
