@@ -43,7 +43,7 @@ $ ./downloads.sh
 Install Python requirements.
 
 ```bash
-$ pip install numpy && pip install -r ./pip-requirements
+$ pip install numpy && pip install scipy && pip install -r ./pip-requirements
 ```
 
 Install OpenCV for python, following the instructions in: http://opencv.org.
