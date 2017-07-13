@@ -41,6 +41,12 @@ Install Python requirements.
 $ pip install -r ./pip-requirements
 ```
 
+Install PyDenseCRF (https://github.com/lucasb-eyer/pydensecrf).
+
+```bash
+$ pip install git+https://github.com/lucasb-eyer/pydensecrf.git
+```
+
 ## Running
 
 For every image, you compute (1) a seed heatmap, (2) a saliency map, 
