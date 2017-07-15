@@ -19,13 +19,20 @@ TRAIN_SEG = True
 TEST_SEG = True
 
 # Common options
-PASCALROOT = "/BS/joon_projects/work/"
-VISUALISE = False
-SAVE_CACHE = True
+PASCALROOT = "/BS/joon_projects/work/" # please change this to your Pascal dir.
+VISUALISE = False # visualise output on test images.
+SAVE_CACHE = True # save intermediate & final results in cache/
+OVERRIDECACHE = True # ignore saved cache even if intermediate results are in cache/
 GPU = 0
 
+# Experimental options
 SEED_TYPE = 'GAP-HighRes'
-SEED_THRES = 20
+PCRF_TYPE = 'deeplab'
+# DenseCRF postprocessing.
+# 'none' for no postprocessing. 
+# 'deeplab' for the parameters used by DeepLab v1.
+
+###############
 
 if TRAIN_SEED:
     print("##########\nSeed Training\n##########")
@@ -34,7 +41,7 @@ if TRAIN_SEED:
     conf = dict(
         vis=VISUALISE,
         save=SAVE_CACHE,
-        overridecache=True,
+        overridecache=OVERRIDECACHE,
         pascalroot=PASCALROOT,
         imagenetmeanloc="data/ilsvrc_2012_mean.npy",
         gpu=GPU,
@@ -62,7 +69,7 @@ if TEST_SEED:
         vis=VISUALISE,
         visconf=0.5,
         shuffle=True,
-        overridecache=True,
+        overridecache=OVERRIDECACHE,
         pascalroot=PASCALROOT,
         imagenetmeanloc="data/ilsvrc_2012_mean.npy",
         gpu=GPU,
@@ -102,7 +109,7 @@ if GENERATE_GUIDE:
         vis=VISUALISE,
         save=SAVE_CACHE,
         shuffle=True,
-        overridecache=True,
+        overridecache=OVERRIDECACHE,
         pascalroot=PASCALROOT,
         gpu=GPU,
         n=0,
@@ -133,7 +140,7 @@ if GENERATE_GUIDE:
         s_test_datatype='Segmentation',
 
         gtcls='use',
-        seedthres=SEED_THRES,
+        seedthres=20,
         salthres=50,
         guiderule='G2',
         test_dataset='voc12train_aug',
@@ -149,7 +156,7 @@ if TRAIN_SEG:
     conf = dict(
         vis=VISUALISE,
         save=SAVE_CACHE,
-        overridecache=True,
+        overridecache=OVERRIDECACHE,
         pascalroot=PASCALROOT,
         imagenetmeanloc="data/ilsvrc_2012_mean.npy",
         gpu=GPU,
@@ -187,7 +194,7 @@ if TRAIN_SEG:
         s_s_test_datatype='Segmentation',
 
         s_gtcls='use',
-        s_seedthres=SEED_THRES,
+        s_seedthres=20,
         s_salthres=50,
         s_guiderule='G2',
         s_test_dataset='voc12train_aug',
@@ -204,7 +211,7 @@ if TEST_SEG:
         save=SAVE_CACHE,
         vis=VISUALISE,
         shuffle=True,
-        overridecache=True,
+        overridecache=OVERRIDECACHE,
         pascalroot=PASCALROOT,
         imagenetmeanloc="data/ilsvrc_2012_mean.npy",
         gpu=GPU,
@@ -242,7 +249,7 @@ if TEST_SEG:
         s_s_test_datatype='Segmentation',
 
         s_gtcls='use',
-        s_seedthres=SEED_THRES,
+        s_seedthres=20,
         s_salthres=50,
         s_guiderule='G2',
         s_test_dataset='voc12train_aug',
@@ -251,7 +258,7 @@ if TEST_SEG:
         test_iter=8000,
         test_dataset='voc12val',
         test_datatype='Segmentation',
-        test_pcrf='deeplab',
+        test_pcrf=PCRF_TYPE,
         test_resize='none',
     )
 
