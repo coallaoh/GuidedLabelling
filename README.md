@@ -73,7 +73,9 @@ $ ./script.py
 ```
 
 Before running, please change the variable `PASCALROOT` to indicate the root directory for your [Pascal VOC](http://host.robots.ox.ac.uk:8080/pascal/VOC/) database, and set the variable `GPU` to the gpu device number of your choice. Please read the script for greater details.
- 
+
+The final segmentation performance on the Pascal *val* set is computed automatically: it should be **51.419** and **56.153** mIoU, before and after the CRF postprocessing, respectively. They are slightly better than what is reported in our paper (51.2 and 55.7 respectively). 
+
 #### For keen people
 
 ```bash
