@@ -22,7 +22,7 @@ TEST_SEG = True
 PASCALROOT = "/BS/joon_projects/work/"
 VISUALISE = False
 SAVE_CACHE = True
-GPU = 1
+GPU = 0
 
 SEED_TYPE = 'GAP-HighRes'
 SEED_THRES = 20
@@ -47,7 +47,7 @@ if TRAIN_SEED:
         datatype='Segmentation',
         base_lr=0.001,
         batch_size=15,
-        balbatch='clsbal',
+        balbatch='none',
     )
 
     seed_train(control, conf)
@@ -75,7 +75,7 @@ if TEST_SEED:
         datatype='Segmentation',
         base_lr=0.001,
         batch_size=15,
-        balbatch='clsbal',
+        balbatch='none',
         test_iter=8000,
         test_dataset='voc12train_aug',
         test_datatype='Segmentation',
@@ -117,7 +117,7 @@ if GENERATE_GUIDE:
         g_datatype='Segmentation',
         g_base_lr=0.001,
         g_batch_size=15,
-        g_balbatch='clsbal',
+        g_balbatch='none',
         g_test_iter=8000,
         g_test_dataset='voc12train_aug',
         g_test_datatype='Segmentation',
@@ -171,7 +171,7 @@ if TRAIN_SEG:
         s_g_datatype='Segmentation',
         s_g_base_lr=0.001,
         s_g_batch_size=15,
-        s_g_balbatch='clsbal',
+        s_g_balbatch='none',
         s_g_test_iter=8000,
         s_g_test_dataset='voc12train_aug',
         s_g_test_datatype='Segmentation',
@@ -226,7 +226,7 @@ if TEST_SEG:
         s_g_datatype='Segmentation',
         s_g_base_lr=0.001,
         s_g_batch_size=15,
-        s_g_balbatch='clsbal',
+        s_g_balbatch='none',
         s_g_test_iter=8000,
         s_g_test_dataset='voc12train_aug',
         s_g_test_datatype='Segmentation',
