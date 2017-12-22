@@ -11,4 +11,4 @@ wget https://transfer.d2.mpi-inf.mpg.de/joon/joon17cvpr/list.tar.gz
 tar xvf list.tar.gz
 rm list.tar.gz
 
-mv list {$PASCALROOT}VOC2012/ImageSets/Segmentation/
+mv list $PASCALROOT"VOC2012/ImageSets/Segmentation/"
