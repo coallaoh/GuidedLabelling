@@ -32,7 +32,8 @@ $ make -j50 && make pycaffe
 
 #### Downloads
 
-Download precomputed saliency maps, network initialisations, etc.
+Download precomputed saliency maps, network initialisations, train_aug.txt etc.
+Please modify the path `PASCALROOT` in `downloads.sh` to indicate the root directory for your [Pascal VOC](http://host.robots.ox.ac.uk:8080/pascal/VOC/) database, and run
 
 ```bash
 $ ./downloads.sh
